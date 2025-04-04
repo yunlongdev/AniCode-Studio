@@ -1,0 +1,16 @@
+{
+  "hosting": {
+    "public": "C:\\Users\\kille\\Desktop\\uwi stuff\\semester2year1\\info1601\\final project\\AniCode-Studio\\public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
