@@ -1,0 +1,52 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* HEADER/TOP */
+#header_container {
+    background-color: black;
+    padding: 16px;
+    position: relative;
+}
+
+#title {
+    text-align: center;
+    font-size: 3.5rem;
+}
+
+#title a {
+    text-decoration: none;
+    color: white;
+}
+
+#sign_log_in {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+}
+
+#sign_log_in button {
+    cursor: pointer;
+    padding: 8px;
+    font-size: 1rem;
+    border-radius: 16px;
+    border: none;
+    color: white;
+    background-color: #3f3f3f;
+}
+
+#sign_log_in button:hover{
+    background-color: #717171;
+}
+
+#logo img {
+    position: absolute;
+    top: 8px;
+    left: 16px;
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 24px;
+}
