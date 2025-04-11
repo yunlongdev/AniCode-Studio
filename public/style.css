@@ -4,12 +4,13 @@
     box-sizing: border-box;
 }
 
-body
-{
+body {
     background-color: black;
+    color: white;
+    font-family: sans-serif;
 }
 
-/* !HEADER/TOP */
+/* Header */
 #header_container {
     background-color: black;
     padding: 16px;
@@ -19,9 +20,14 @@ body
 #title {
     text-align: center;
     font-size: 3.5rem;
-}
+    font-family: 'Sawarabi Mincho', serif;
+    letter-spacing: 0.05em;
+    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.2);
+    background-color: #1e1e1e;
+  }
 
-#title a, .container a {
+#title a,
+.container a {
     text-decoration: none;
     color: white;
 }
@@ -42,7 +48,7 @@ body
     background-color: #3f3f3f;
 }
 
-#sign_log_in button:hover{
+#sign_log_in button:hover {
     background-color: #717171;
 }
 
@@ -60,22 +66,22 @@ body
     border-radius: 24px;
 }
 
-/* !NAV */
-#nav, #footer
-{
+/* Navigation */
+#nav,
+#footer {
     overflow: hidden;
     background-color: #282828;
     display: flex;
     align-items: center;
 }
 
-#footer
-{
+#footer {
     background-color: #3f3f3f;
 }
 
-#nav a, #buttons a, #footer a
-{
+#nav a,
+#buttons a,
+#footer a {
     display: block;
     color: white;
     text-align: center;
@@ -84,125 +90,258 @@ body
     font-size: 1.25rem;
 }
 
-#nav a:hover, #buttons a:hover 
-{
+#nav a:hover,
+#buttons a:hover {
     background-color: #575757;
 }
 
-#footer a:hover
-{
+#footer a:hover {
     background-color: #8b8b8b;
 }
 
-/* !BUTTONS */
-#buttons
-{
+/* Buttons */
+#buttons {
     overflow: hidden;
     background-color: #282828;
     display: block;
     margin-top: 16px;
 }
 
-#next, #prev
-{
+.icon-search-btn {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 8px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+  
+  .icon-search-btn:hover {
+    background-color: #2a2a2a;
+    border-color: #555;
+  }
+  
+  .icon-search-btn svg {
+    stroke: white;
+    width: 18px;
+    height: 18px;
+  }
+
+#next,
+#prev {
     float: right;
 }
 
-#next
-{
+#next {
     margin-right: 8px;
 }
 
-/* !SEARCH BAR */
-.search
-{
-    margin-left: auto;
-    padding: 4px;
-    border: none;
-    font-size: 0.75rem;
-}  
-
-.search button, input[type=text]
-{
-    padding: 4.5px;
-    margin-left: 4px;
-    margin-right: 4px;
-    cursor: pointer;
-    border-radius: 16px;
-    border: none;
-}
-
-.search input[type=text]
-{
-    cursor: auto;
-    margin-right: 0;
-}
-
-/* !MAIN GALLERY */
-.container 
-{
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    gap: 16px;
+#buttons {
+    display: flex;
+    justify-content: center;
     margin-top: 16px;
-    width: 80%;
-    margin-left: auto;
-    margin-right: auto;
 }
 
-.card {
-    position: relative;
-    height: 232px;
-
-    /* todo Just for demonstration. To be removed */
-    background-color: #3f3f3f;
+.nav-btn {
+    background-color: #333;
     color: white;
-    
-    /* Center */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin: 0 10px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-btn:hover {
+    background-color: #555;
+}
+
+/* Search bar */
+.search {
+    margin: 16px auto;
+    text-align: center;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
+    gap: 8px;
 }
 
-.details
-{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-}
-
-.details img
-{
-    height: 80%;
-    width: 100%;
-    object-fit: cover;
-}
-
-.details p
-{
-    margin-top: 8px;
+.search input[type="text"] {
+    padding: 8px 12px;
+    height: 36px;
+    border-radius: 20px;
     font-size: 1rem;
+    border: none;
+    background-color:#1e1e1e
+  }
+  
+  .icon-search-btn {
+    width: 42px;
+    height: 42px;
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+/* Container */
+.container {
+    padding: 16px;
 }
 
-.icon
-{
+/* Gallery Grid */
+#gallery-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+/* Card */
+.card {
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+    position: relative;
+}
+
+/* Hover effect on card */
+.card:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+  
+  .title_card {
+    width: 100%;
+    height: 270px;
+    object-fit: cover;
+  }
+  
+  .card {
+    position: relative;
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+  }
+  
+  .details {
+    padding: 12px;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  
+  .details {
+    font-family: 'Sawarabi Mincho', serif;
+    padding: 12px;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-align: center;
+  }
+  
+  .details a:hover {
+    text-decoration: underline;
+  }
+  
+  .card-link {
+    display: block;
+    text-decoration: none;
+  }
+  
+  .card-link img {
+    width: 100%;
+    height: auto;
+  }
+  
+
+/* Card image */
+.title_card {
+    width: 100%;
+    height: 270px;
+    object-fit: cover;
+    display: block;
+}
+
+/* Link styling */
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.card-link:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+.card-link .details {
+    text-decoration: none;
+    color: inherit;
+}
+
+.card-link .details:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Card title link */
+.details {
+    display: block;
+    padding: 12px;
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.details:hover {
+    text-decoration: underline;
+    color: #d1d1d1;
+}
+
+/* Icon inside card */
+.icon {
     position: absolute;
     bottom: 8px;
     right: 8px;
 }
 
-.icon img
-{
+.icon img {
     width: 16px;
     height: 16px;
     object-fit: fill;
 }
 
-/* !Dogwater code for demistration. */
-/* todo Change for an actual icon */
+/* hover effect for icon */
 .icon img:hover {
     filter: brightness(0) saturate(100%) invert(62%) sepia(91%) saturate(355%) hue-rotate(359deg) brightness(96%) contrast(103%);
+}
+
+/* Footer */
+footer {
+    background-color: #3f3f3f;
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
 }
