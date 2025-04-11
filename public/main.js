@@ -36,9 +36,6 @@ async function fetchAnime(page = 1) {
       link.appendChild(title);
       card.appendChild(link);
 
-      card.addEventListener('mouseenter', () => showTrailerPreview(anime.mal_id, card));
-      card.addEventListener('mouseleave', () => hideTrailerPreview(card));
-
       galleryContainer.appendChild(card);
     });
 
