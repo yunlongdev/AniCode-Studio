@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "C:\\Users\\kille\\Desktop\\uwi stuff\\semester2year1\\info1601\\final project\\AniCode-Studio\\public",
+    "public": "public",
     "ignore": [
       "firebase.json",
       "**/.*",
