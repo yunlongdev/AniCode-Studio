@@ -3,7 +3,7 @@
     "public": "public",
     "headers": [
       {
-        "source": "**/*.@(js|css|html)",
+        "source": "**/*.@(main|css|home)",
         "headers": [
           {
             "key": "Cache-Control",
