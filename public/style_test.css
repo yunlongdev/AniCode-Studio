@@ -32,7 +32,8 @@ button {
 
 #title a {
     text-decoration: none;
-    color: white;
+    color: #6bb5e6;
+    text-shadow: #6bb5e6 0 0 6px;
 }
 
 .sign_log_in {
@@ -179,6 +180,11 @@ button {
     box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
 }
 
+/* Remove underline */
+.card a {
+    text-decoration: none;
+}
+
 /* Image */
 .title_card {
     width: 100%;
@@ -191,7 +197,7 @@ button {
     padding: 4px;
     color: white;
     font-size: 1rem;
-    font-family: 'Poppins', serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 /* !NEXT_PREV_RANDOM */
