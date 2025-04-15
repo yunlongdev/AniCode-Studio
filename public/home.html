@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AniCode Studio</title>
+    <link rel="stylesheet" href="style.css"/>
+    
+    <!-- ROBOTO -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Sawarabi+Mincho&display=swap" rel="stylesheet">
+  </head>
+
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <h1 id="title">
+        <!-- !Links to home -->
+        <a href="./home.html">AniCode Studio</a>
+      </h1>
+
+      <div class="sign_log_in">
+        <button id="sign_in">Sign In</button>
+        <button id="login">Login</button>
+      </div>
+
+      <!-- !Add logo here -->
+      <div id="logo">
+        <img src="https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_3x2.jpg" alt="cat_test" />
+      </div>
+    </header>
+
+    <!-- !NAV -->
+    <nav class="nav">
+      <div class="filter">
+        <a href="">Mood1</a>
+        <a href="">Mood2</a>
+        <a href="">Mood3</a>
+        <a href="">Mood4</a>
+        <a href="">Mood5</a>
+        <a href="">Mood6</a>
+        <a href="">Mood7</a>
+        <a href="">Mood8</a>
+      </div>
+
+      <div class="search">
+        <input id="search_box" type="text" placeholder="Search Anime...">
+        
+        <button class="icon-search-btn" aria-label="Search">
+          <!-- Search Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="container">
+      <div id="gallery-container" class="gallery-container"></div>
+    </main>
+
+    <!-- Pagination -->
+    <div id="buttons" class="pagination-buttons">
+      <button id="prev" class="nav-btn">Previous</button>
+      <button id="next" class="nav-btn">Next</button>
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer">
+      <div class="footer-links">
+        <a href="#">About Us</a>
+        <a href="#">Contact Us</a>
+      </div>
+      <div class="footer-logo">
+        <img src="logo.png" alt="Logo" />
+      </div>
+    </footer>
+
+    <!-- !JS moved to body -->
+    <script defer src="./main.js"></script>
+  </body>
+</html>

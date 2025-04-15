@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AniCode Studio</title>
+    <link rel="stylesheet" href="style_test.css"/>
+    
+    <!-- ROBOTO -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Sawarabi+Mincho&display=swap" rel="stylesheet">
+  </head>
+
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <h1 id="title">
+        <!-- !Links to home -->
+        <a href="./home_test.html">AniCode Studio</a>
+      </h1>
+
+      <!-- todo JS functionality -->
+      <div class="sign_log_in">
+        <button id="sign_in">Sign In</button>
+        <button id="login">Login</button>
+      </div>
+
+      <!-- todo Add logo here -->
+      <div id="logo">
+        <img src="https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_3x2.jpg" alt="AniCode_logo" />
+      </div>
+    </header>
+
+    <!-- !NAV -->
+    <nav class="nav">
+      <!-- todo Mood Filters -->
+      <div class="filter">
+        <a href="">Mood1</a>
+        <a href="">Mood2</a>
+        <a href="">Mood3</a>
+        <a href="">Mood4</a>
+        <a href="">Mood5</a>
+        <a href="">Mood6</a>
+        <a href="">Mood7</a>
+        <a href="">Mood8</a>
+      </div>
+
+      <!-- todo Search function -->
+      <div class="search">
+        <input id="search_box" type="text" placeholder="Search Anime...">
+        
+        <button id="icon-search-btn" aria-label="Search">
+          <!-- Search Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- !GRID ROW = 4, 4x4-->
+    <main class="grid_container">
+      <!-- !Card Format -->
+      <div class="card">
+        <a href="">
+          <img class="title_card" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfxI3LHY8conwGgtz2-HsHAH50u0oU9V_kbdE_UE2vlvvKhxSOjqRyi23WQrMv0D7iQAA&usqp=CAU" alt="test_picture">
+          <p class="anime_name">Name</p>
+        </a>
+      </div>
+
+      <div class="card">
+        <a href="">
+          <img class="title_card" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfxI3LHY8conwGgtz2-HsHAH50u0oU9V_kbdE_UE2vlvvKhxSOjqRyi23WQrMv0D7iQAA&usqp=CAU" alt="test_picture">
+          <p class="anime_name">Name</p>
+        </a>
+      </div>
+
+      <div class="card">
+        <a href="">
+          <img class="title_card" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfxI3LHY8conwGgtz2-HsHAH50u0oU9V_kbdE_UE2vlvvKhxSOjqRyi23WQrMv0D7iQAA&usqp=CAU" alt="test_picture">
+          <p class="anime_name">Name</p>
+        </a>
+      </div>
+
+      <div class="card">
+        <a href="">
+          <img class="title_card" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfxI3LHY8conwGgtz2-HsHAH50u0oU9V_kbdE_UE2vlvvKhxSOjqRyi23WQrMv0D7iQAA&usqp=CAU" alt="test_picture">
+          <p class="anime_name">Name</p>
+        </a>
+      </div>
+    </main>
+
+    <!-- !NEXT_PREV -->
+    <section class="next_prev_button">
+      <!-- placeholder to simplify center -->
+      <div></div>
+
+      <!-- Random Button -->
+      <div id="random_button">
+        <button id="random">Random</button>
+      </div>
+
+      <div id="next_prev">
+        <button id="next">Prev</button>
+        <button id="prev">Next</button>
+      </div>
+    </section>
+
+    <!-- !JS moved to body -->
+    <script defer src="./main.js"></script>
+  </body>
+</html>
