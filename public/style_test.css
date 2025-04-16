@@ -25,9 +25,6 @@ button {
     text-align: center;
     font-size: 4rem;
     letter-spacing: 0.125rem;
-
-    /* !Can't see */
-    /* text-shadow: 0 2px 4px rgba(255, 255, 255, 0.2); */
 }
 
 #title a {
@@ -196,10 +193,9 @@ button {
     z-index: 1;
 }
   
-.favourite button {
+.favourite button, .social_media button, #github {
     background-color: #3f3f3f;
     border: 1px solid #4b4b4b;
-    border: none;
     border-radius: 50%;
     width: 2em;
     height: 2em;
@@ -267,7 +263,7 @@ button {
 .footer {
     display: flex;
     justify-content: space-evenly;
-    min-height: 10em;
+    min-height: 11em;
     background-color: #282828;
     margin-top: 16px;
     padding: 16px 0px;
@@ -275,7 +271,7 @@ button {
 
 .footer div {
     display: flex;
-    width: 100%;
+    width: 25%;
 }
 
 #footer_logo {
@@ -284,19 +280,42 @@ button {
 }
 
 #footer_logo img {
-    height: 8em;
+    height: 10em;
     width: auto;
     object-fit: contain;
     border-radius: 24px;
     border: 2px #454a4d solid;
 }
 
-#social_media, #other_links {
+.footer h2 {
+    letter-spacing: 0.1rem;
+    font-size: 2rem;
+    color: #6bb5e6;
+    text-shadow: #6bb5e6 0 0 4px;
+}
+
+.social_media, #other_links {
     flex-direction: column;
     align-items: center;
     gap: 16px;
-
 }
+
+.social_media {
+    gap: 12px;
+}
+
+.social_media button, #github {
+    background-color: #282828;
+    border: none;
+}
+
+.social_media svg, #github svg {
+    fill: white;
+} 
+
+.social_media button:hover svg, #github:hover svg {
+    fill: #9acaed;
+} 
 
 .footer a {
     color: white;
@@ -305,5 +324,6 @@ button {
 }
 
 .footer a:hover {
-    color: #6bb5e6;
+    color: #9acaed;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
