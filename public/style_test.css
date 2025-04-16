@@ -52,7 +52,7 @@ button {
     background-color: #3f3f3f;
 }
 
-.sign_log_in button:hover {
+.sign_log_in button:hover, .favourite button:hover {
     background-color: #5d6164;
     border-color: #757a7e;
 }
@@ -74,7 +74,7 @@ button {
 }
 
 /* !NAV */
-.nav{
+.nav {
     display: flex;
     justify-content: space-between; /* filter to left, search to right */
     align-items: center;
@@ -99,7 +99,7 @@ button {
 
 .filter a {
     color: white;
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     text-decoration: none;
     padding: 16px 8px;   
     border-radius: 12px;    
@@ -186,6 +186,41 @@ button {
     width: 100%;
     height: 75%;
     object-fit: cover;
+}
+
+/* Favourite */
+.favourite {
+    position: absolute;
+    bottom: 27%; 
+    right: 6px;
+    z-index: 1;
+}
+  
+.favourite button {
+    background-color: #3f3f3f;
+    border: 1px solid #4b4b4b;
+    border: none;
+    border-radius: 50%;
+    width: 2em;
+    height: 2em;
+    cursor: pointer;
+    padding: 0;
+
+    /* Center star */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+  
+.favourite svg {
+    width: 16px;
+    height: 16px;
+    stroke: #afd4f1;
+}
+  
+.favourite.active svg {
+    fill: #FFD700;
+    stroke: #FFD700;
 }
 
 /* Title */
