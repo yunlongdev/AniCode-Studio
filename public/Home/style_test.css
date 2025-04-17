@@ -54,8 +54,8 @@ button {
     border-color: #757a7e;
 }
 
-/* login & prev */
-#login, #prev {
+/* login & next */
+#login, #next {
     margin-left: 4px;
 }
 
