@@ -25,9 +25,6 @@ button {
     text-align: center;
     font-size: 4rem;
     letter-spacing: 0.125rem;
-
-    /* !Can't see */
-    /* text-shadow: 0 2px 4px rgba(255, 255, 255, 0.2); */
 }
 
 #title a {
@@ -76,50 +73,43 @@ button {
 /* !NAV */
 .nav{
     display: flex;
-    justify-content: space-between; /* filter to left, search to right */
+    justify-content: space-between;
     align-items: center;
     background-color: #3f3f3f;
     min-height: 4em;
+    padding: 0 16px;
+    gap: 16px;
 }
 
-.filter, .search {
-    display: flex; 
-    gap: 8px;
-    padding: 0px 8px;
-}
-
-/* !Instead of wrapping, you can scroll, check*/
-.filter {
-    flex-wrap: nowrap;
-    overflow: auto;  
-    
-    /* scroll */
-    overflow-y: hidden;
-}
-
-.filter a {
-    color: white;
-    font-size: 1.25rem;
-    text-decoration: none;
-    padding: 16px 8px;   
-    border-radius: 12px;    
-}
-
-.filter a:hover {
-    background-color: #5d6164;
-}
-
-#search_box {
-    padding: 0px 8px;
+.search-type, .mood-filter, .tag-filter {
+    padding: 8px;
     border-radius: 16px;
     border: none;
     background-color: #282828;
     color: #afd4f1;
     font-size: 0.9rem;
+    min-width: 120px;
+}
+
+.search {
+    display: flex; 
+    gap: 8px;
+    padding: 0px 8px;
+}
+
+#search_box {
+    padding: 8px;
+    border-radius: 16px;
+    border: none;
+    background-color: #282828;
+    color: #afd4f1;
+    font-size: 0.9rem;
+    width: 200px;
 }
 
 #search_box:focus {
-    color: white; /* typing */
+    color: white;
+    outline: none;
 }
 
 #icon-search-btn {
@@ -136,7 +126,6 @@ button {
     justify-content: center;
 }
 
-/* search icon, next, prev, random */
 #icon-search-btn:hover, #random:hover, #prev:hover, #next:hover {
     background-color: #2e3438;
     border-color: #555;
@@ -151,12 +140,7 @@ button {
 /* !GRID */
 .grid_container {
     display: grid;
-
-    /* Style container */
     padding: 24px 32px;
-
-    /* Grid */
-    /* no need to grow, causes sizing issues */
     grid-template-columns: repeat(auto-fit, 14.25em);
     gap: 24px;
     justify-content: center;
@@ -174,27 +158,27 @@ button {
     cursor: pointer;
 }
 
-/* Hover effect on card */
 .card:hover {
     transform: translateY(-5px) scale(1.03);
     box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
 }
 
-/* Remove underline */
 .card a {
     text-decoration: none;
+    display: block;
+    height: 100%;
 }
 
-/* Image */
 .title_card {
     width: 100%;
     height: 75%;
     object-fit: cover;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
 }
 
-/* Title */
-.anime_name {
-    padding: 4px;
+.details {
+    padding: 12px;
     color: white;
     font-size: 1rem;
     font-family: 'Poppins', sans-serif;

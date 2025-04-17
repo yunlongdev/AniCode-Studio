@@ -36,17 +36,30 @@
 
     <!-- !NAV -->
     <nav class="nav">
-      <!-- todo Mood Filters -->
-      <div class="filter">
-        <a href="">Mood1</a>
-        <a href="">Mood2</a>
-        <a href="">Mood3</a>
-        <a href="">Mood4</a>
-        <a href="">Mood5</a>
-        <a href="">Mood6</a>
-        <a href="">Mood7</a>
-        <a href="">Mood8</a>
-      </div>
+      <!-- Search type selector -->
+      <select id="search-type" class="search-type">
+        <option value="keyword">Keyword</option>
+        <option value="mood">Mood</option>
+        <option value="tag">Tag</option>
+      </select>
+
+      <!-- Mood Filter -->
+      <select id="mood-filter" class="mood-filter" style="display: none;">
+        <option value="">Select Mood</option>
+        <option value="sad">Sad</option>
+        <option value="happy">Happy</option>
+        <option value="angst">Angst</option>
+        <option value="tragedy">Tragedy</option>
+        <option value="romantic">Romantic</option>
+        <option value="love-at-first-sight">Love at First Sight</option>
+        <option value="enemies-to-lovers">Enemies to Lovers</option>
+        <option value="family-friendly">Family Friendly</option>
+      </select>
+
+      <!-- Tag Filter -->
+      <select id="tag-filter" class="tag-filter" style="display: none;">
+        <option value="">Select Tag</option>
+      </select>
 
       <!-- todo Search function -->
       <div class="search">
@@ -62,36 +75,9 @@
       </div>
     </nav>
 
-    <!-- !GRID ROW = 4, 4x4-->
-    <main class="grid_container">
-      <!-- !Card Format -->
-      <div class="card">
-        <a href="">
-          <img class="title_card" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfxI3LHY8conwGgtz2-HsHAH50u0oU9V_kbdE_UE2vlvvKhxSOjqRyi23WQrMv0D7iQAA&usqp=CAU" alt="test_picture">
-          <p class="anime_name">Name</p>
-        </a>
-      </div>
-
-      <div class="card">
-        <a href="">
-          <img class="title_card" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfxI3LHY8conwGgtz2-HsHAH50u0oU9V_kbdE_UE2vlvvKhxSOjqRyi23WQrMv0D7iQAA&usqp=CAU" alt="test_picture">
-          <p class="anime_name">Name</p>
-        </a>
-      </div>
-
-      <div class="card">
-        <a href="">
-          <img class="title_card" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfxI3LHY8conwGgtz2-HsHAH50u0oU9V_kbdE_UE2vlvvKhxSOjqRyi23WQrMv0D7iQAA&usqp=CAU" alt="test_picture">
-          <p class="anime_name">Name</p>
-        </a>
-      </div>
-
-      <div class="card">
-        <a href="">
-          <img class="title_card" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfxI3LHY8conwGgtz2-HsHAH50u0oU9V_kbdE_UE2vlvvKhxSOjqRyi23WQrMv0D7iQAA&usqp=CAU" alt="test_picture">
-          <p class="anime_name">Name</p>
-        </a>
-      </div>
+    <!-- !GRID CONTAINER -->
+    <main id="gallery-container" class="grid_container">
+      <!-- Cards will be inserted here by JavaScript -->
     </main>
 
     <!-- !NEXT_PREV -->
@@ -105,8 +91,8 @@
       </div>
 
       <div id="next_prev">
-        <button id="next">Prev</button>
-        <button id="prev">Next</button>
+        <button id="prev">Prev</button>
+        <button id="next">Next</button>
       </div>
     </section>
 
