@@ -7,15 +7,14 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 import { 
-    getFirestore,
-    collection,
-    addDoc,
-    query,
-    where,
-    getDocs,
-  } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-// Your Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyB2_6cfrGeg210I-D80l9snYQ7JV_2bgEk",
   authDomain: "anicode-studio.firebaseapp.com",
@@ -26,14 +25,11 @@ const firebaseConfig = {
   measurementId: "G-XHGKSBKDZ8"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-
-// Initialize Firestore
 const db = getFirestore(app);
 
-// DOM elements for auth
+// DOM elements
 const signInBtn = document.getElementById('sign_in');
 const loginBtn = document.getElementById('login');
 const authModal = document.getElementById('auth-modal');
@@ -48,173 +44,245 @@ const userDropdown = document.getElementById('user-dropdown');
 const userEmailSpan = document.getElementById('user-email');
 const logoutBtn = document.getElementById('logout-btn');
 
-// Add bookmark
-async function addBookmark(userId, animeData) {
-    try {
-      const q = query(
-        collection(db, "bookmarks"),
-        where("userId", "==", userId),
-        where("anime.id", "==", animeData.id)
-      );
-      
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        throw new Error('This anime is already bookmarked');
-      }
-      
-      await addDoc(collection(db, "bookmarks"), {
-        userId: userId,
-        anime: animeData,
-        createdAt: new Date()
-      });
-    } catch (error) {
-      console.error("Error adding bookmark:", error);
-      throw error;
-    }
-  }
-  
-  // Get bookmarks
-  async function getBookmarks(userId) {
-    try {
-      const q = query(collection(db, "bookmarks"), where("userId", "==", userId));
-      const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => doc.data().anime);
-    } catch (error) {
-      console.error("Error getting bookmarks:", error);
-      return [];
-    }
-  }
-  
-  // Check if anime is bookmarked
-  async function checkBookmark(userId, animeId) {
-    try {
-      const q = query(
-        collection(db, "bookmarks"),
-        where("userId", "==", userId),
-        where("anime.id", "==", animeId)
-      );
-      const querySnapshot = await getDocs(q);
-      return !querySnapshot.empty;
-    } catch (error) {
-      console.error("Error checking bookmark:", error);
-      return false;
-    }
-  }
-  
-  // Show auth modal
+// Helper function to convert username to email
+function usernameToEmail(username) {
+  return `${username}@anicode.com`; // Using a fixed domain
+}
+
+// Show auth modal
 function showAuthModal(formType = 'login') {
-    authModal.style.display = 'block';
-    if (formType === 'login') {
-      loginForm.style.display = 'block';
-      signupForm.style.display = 'none';
-    } else {
-      loginForm.style.display = 'none';
-      signupForm.style.display = 'block';
-    }
+  authModal.style.display = 'block';
+  if (formType === 'login') {
+    loginForm.style.display = 'block';
+    signupForm.style.display = 'none';
+  } else {
+    loginForm.style.display = 'none';
+    signupForm.style.display = 'block';
   }
-  
-  // Close auth modal
-  function closeAuthModal() {
-    authModal.style.display = 'none';
-  }
-  
-  signInBtn.addEventListener('click', () => showAuthModal('signup'));
-  loginBtn.addEventListener('click', () => showAuthModal('login'));
-  closeModal.addEventListener('click', closeAuthModal);
-  switchToSignup.addEventListener('click', (e) => {
-    e.preventDefault();
-    showAuthModal('signup');
-  });
-  switchToLogin.addEventListener('click', (e) => {
-    e.preventDefault();
-    showAuthModal('login');
-  });
-  
-  // Close modal when clicking outside
-  window.addEventListener('click', (e) => {
-    if (e.target === authModal) {
-      closeAuthModal();
-    }
-  });
+}
 
-// Email/Password Login
+// Close auth modal
+function closeAuthModal() {
+  authModal.style.display = 'none';
+}
+
+// Event listeners for modal
+signInBtn.addEventListener('click', () => showAuthModal('signup'));
+loginBtn.addEventListener('click', () => showAuthModal('login'));
+closeModal.addEventListener('click', closeAuthModal);
+switchToSignup.addEventListener('click', (e) => {
+  e.preventDefault();
+  showAuthModal('signup');
+});
+switchToLogin.addEventListener('click', (e) => {
+  e.preventDefault();
+  showAuthModal('login');
+});
+
+// Close modal when clicking outside
+window.addEventListener('click', (e) => {
+  if (e.target === authModal) {
+    closeAuthModal();
+  }
+});
+
+// Username validation
+function isValidUsername(username) {
+  const regex = /^[a-zA-Z0-9_]{3,20}$/;
+  return regex.test(username);
+}
+
+// Signup function
+signupEmailForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const username = document.getElementById('signup-username').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const confirmPassword = document.getElementById('signup-password-confirm').value;
+
+  // Validate username
+  if (!isValidUsername(username)) {
+    alert("Username must be 3-20 characters long and can only contain letters, numbers, and underscores");
+    return;
+  }
+
+  // Check if username exists
+  const usernameQuery = query(collection(db, "usernames"), where("username", "==", username));
+  const usernameSnapshot = await getDocs(usernameQuery);
+  if (!usernameSnapshot.empty) {
+    alert("Username already exists");
+    return;
+  }
+
+  // Check password match
+  if (password !== confirmPassword) {
+    alert("Passwords don't match!");
+    return;
+  }
+
+  try {
+    // Create user with generated email
+    const email = usernameToEmail(username);
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    
+    // Store username in Firestore
+    await addDoc(collection(db, "usernames"), {
+      userId: userCredential.user.uid,
+      username: username,
+      createdAt: new Date()
+    });
+    
+    closeAuthModal();
+  } catch (error) {
+    console.error('Signup error:', error);
+    alert("Signup failed: " + error.message);
+  }
+});
+
+// Login function
 loginEmailForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-    
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      closeAuthModal();
-    } catch (error) {
-      alert(error.message);
-      console.error('Login error:', error);
-    }
-  });
+  e.preventDefault();
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
   
-  // Email/Password Signup
-  signupEmailForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('signup-email').value;
-    const password = document.getElementById('signup-password').value;
-    const confirmPassword = document.getElementById('signup-password-confirm').value;
-    
-    if (password !== confirmPassword) {
-      alert("Passwords don't match!");
-      return;
-    }
-    
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      closeAuthModal();
-    } catch (error) {
-      alert(error.message);
-      console.error('Signup error:', error);
-    }
-  });
-  
-  // Logout
-  logoutBtn.addEventListener('click', async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  });
-  
-  // Auth state observer
-  onAuthStateChanged(auth, (user) => {
-    const signLogInDiv = document.querySelector('.sign_log_in');
-    
-    if (user) {
-      // User signed in
-      signLogInDiv.style.display = 'none';
-      userDropdown.style.display = 'block';
-      userEmailSpan.textContent = user.email;
-    } else {
-      // User signed out
-      signLogInDiv.style.display = 'flex';
-      userDropdown.style.display = 'none';
-    }
-  });
+  try {
+    // Convert username to email
+    const email = usernameToEmail(username);
+    await signInWithEmailAndPassword(auth, email, password);
+    closeAuthModal();
+  } catch (error) {
+    console.error('Login error:', error);
+    alert("Invalid username or password");
+  }
+});
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const dropdown = document.querySelector('.dropdown');
-    const profileBtn = document.getElementById('user-profile-btn');
-    
-    if (dropdown && profileBtn) {
-        profileBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const dropdownContent = dropdown.querySelector('.dropdown-content');
-            dropdownContent.classList.toggle('show');
-        });
-        
-        // Close dropdown when clicking outside
-        window.addEventListener('click', (e) => {
-            if (!dropdown.contains(e.target)) {
-                const dropdownContent = dropdown.querySelector('.dropdown-content');
-                dropdownContent.classList.remove('show');
-            }
-        });
+// Get username from Firestore
+async function getUsername(userId) {
+  try {
+    const q = query(collection(db, "usernames"), where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      return querySnapshot.docs[0].data().username;
     }
+    return null;
+  } catch (error) {
+    console.error("Error getting username:", error);
+    return null;
+  }
+}
+
+// Auth state observer
+onAuthStateChanged(auth, async (user) => {
+  const signLogInDiv = document.querySelector('.sign_log_in');
+  
+  if (user) {
+    // User signed in
+    signLogInDiv.style.display = 'none';
+    userDropdown.style.display = 'block';
+    
+    // Get and display username
+    const username = await getUsername(user.uid);
+    if (username) {
+      userEmailSpan.textContent = username;
+    } else {
+      // Fallback to email prefix if username not found
+      userEmailSpan.textContent = user.email.split('@')[0];
+    }
+  } else {
+    // User signed out
+    signLogInDiv.style.display = 'flex';
+    userDropdown.style.display = 'none';
+  }
+});
+
+// Logout function
+logoutBtn.addEventListener('click', async () => {
+  try {
+    await signOut(auth);
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
+});
+
+// Dropdown toggle
+document.addEventListener('DOMContentLoaded', () => {
+  const dropdown = document.querySelector('.dropdown');
+  const profileBtn = document.getElementById('user-profile-btn');
+  
+  if (dropdown && profileBtn) {
+    profileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const dropdownContent = dropdown.querySelector('.dropdown-content');
+      dropdownContent.classList.toggle('show');
+    });
+    
+    // Close dropdown when clicking outside
+    window.addEventListener('click', (e) => {
+      if (!dropdown.contains(e.target)) {
+        const dropdownContent = dropdown.querySelector('.dropdown-content');
+        dropdownContent.classList.remove('show');
+      }
+    });
+  }
+});
+
+// Bookmark functions
+async function addBookmark(userId, animeData) {
+  try {
+    const q = query(
+      collection(db, "bookmarks"),
+      where("userId", "==", userId),
+      where("anime.id", "==", animeData.id)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      throw new Error('This anime is already bookmarked');
+    }
+    
+    await addDoc(collection(db, "bookmarks"), {
+      userId: userId,
+      anime: animeData,
+      createdAt: new Date()
+    });
+  } catch (error) {
+    console.error("Error adding bookmark:", error);
+    throw error;
+  }
+}
+
+async function getBookmarks(userId) {
+  try {
+    const q = query(collection(db, "bookmarks"), where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => doc.data().anime);
+  } catch (error) {
+    console.error("Error getting bookmarks:", error);
+    return [];
+  }
+}
+
+async function checkBookmark(userId, animeId) {
+  try {
+    const q = query(
+      collection(db, "bookmarks"),
+      where("userId", "==", userId),
+      where("anime.id", "==", animeId)
+    );
+    const querySnapshot = await getDocs(q);
+    return !querySnapshot.empty;
+  } catch (error) {
+    console.error("Error checking bookmark:", error);
+    return false;
+  }
+}
+
+exports.cleanupDeletedUser = functions.auth.user().onDelete((user) => {
+  const userId = user.uid;
+  return admin.firestore().collection("usernames").where("userId", "==", userId)
+    .get()
+    .then(snapshot => {
+      const batch = admin.firestore().batch();
+      snapshot.forEach(doc => batch.delete(doc.ref));
+      return batch.commit();
+    });
 });

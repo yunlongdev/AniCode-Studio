@@ -30,7 +30,7 @@
         <div class="dropdown-wrapper">
             <div id="user-dropdown" class="dropdown" style="display: none;">
                 <button id="user-profile-btn" class="profile-btn">
-                    <span id="user-email"></span>
+                    <span id="user-username"></span>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -83,9 +83,24 @@
         // DOM elements
         const userDropdown = document.getElementById('user-dropdown');
         const userProfileBtn = document.getElementById('user-profile-btn');
-        const userEmailSpan = document.getElementById('user-email');
+        const userUsernameSpan = document.getElementById('user-username');
         const logoutBtn = document.getElementById('logout-btn');
         const bookmarksContainer = document.getElementById('bookmarks-page-container');
+
+        // Get username from Firestore
+        async function getUsername(userId) {
+            try {
+                const q = query(collection(db, "usernames"), where("userId", "==", userId));
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    return querySnapshot.docs[0].data().username;
+                }
+                return null;
+            } catch (error) {
+                console.error("Error getting username:", error);
+                return null;
+            }
+        }
 
         // Load bookmarks
         async function loadBookmarks(userId) {
@@ -148,13 +163,14 @@
         }
 
         // Auth state observer
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
                 userDropdown.style.display = 'block';
-                userEmailSpan.textContent = user.email;
+                const username = await getUsername(user.uid);
+                userUsernameSpan.textContent = username || user.email.split('@')[0];
                 loadBookmarks(user.uid);
             } else {
-                window.location.href = 'home_test.html';
+                window.location.href = 'home.html';
             }
         });
 
