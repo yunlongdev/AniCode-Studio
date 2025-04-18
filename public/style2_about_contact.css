@@ -3,6 +3,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
 
 body {
@@ -78,7 +79,7 @@ button {
     gap: 0.5rem;
 }
 
-.sign_log_in button {
+.sign_log_in button, #submit_form {
     cursor: pointer;
     padding: 0.5rem 1rem;
     font-size: 1rem;
@@ -89,12 +90,12 @@ button {
     transition: all 0.3s ease;
 }
 
-.sign_log_in button:hover {
+.sign_log_in button:hover, #submit_form {
     background-color: #5d6164;
     border-color: #7a8085;
 }
 
-.sign_log_in button, #random, #prev, #next {
+.sign_log_in button, #random, #prev, #next, #submit_form {
     background: linear-gradient(to bottom, #4a4a4a, #3a3a3a);
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     border: none;
@@ -266,7 +267,7 @@ button {
 }
 
 /* !From gallery container to pagation deleted */
-/* !About us styling */
+/* !ABOUT US */
 .about_us {
     color: white;
 }
@@ -278,6 +279,40 @@ button {
 
 .about_us_title {
     text-align: center;
+}
+
+/* !CONTACT US */
+.contact_us {
+    color: white;
+    background-color: #282828;
+    font-size: 1.2em;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    padding: 8px 32px;
+    margin-left: 18%;
+    margin-right: 18%;
+    border-radius: 24px;
+}
+
+.contact_us h2 {
+    text-align: center;
+    font-size: 2em;
+}
+
+.contact_us div {
+    margin-bottom: 16px;
+}
+
+.contact_us input[type=text], #country {
+    height: 2em;
+    width: 22em;
+    padding: 4px;
+}
+
+#message {
+    height: 6em;
+    width: 22em;
+    padding: 4px;
 }
 
 /* Footer Styles */
