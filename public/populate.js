@@ -242,21 +242,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   };
 
-  async function checkBookmark(userId, animeId) {
-    try {
-        const q = query(
-            collection(db, "bookmarks"),
-            where("userId", "==", userId),
-            where("anime.id", "==", animeId)
-        );
-        const querySnapshot = await getDocs(q);
-        return !querySnapshot.empty;
-    } catch (error) {
-        console.error("Error checking bookmark:", error);
-        return false;
-    }
-}
-
   // Main Controller
   async function loadAnime(page = 1, query = '', mood = '') {
     try {

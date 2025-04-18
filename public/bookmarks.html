@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>My Bookmarks - AniCode Studio</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style1.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
@@ -14,11 +14,11 @@
     <!-- Header -->
     <header class="header">
         <h1 id="title">
-            <a href="./home.html">AniCode Studio</a>
+            <a href="./home1.html">AniCode Studio</a>
         </h1>
 
         <div class="nav-back">
-            <a href="home.html" class="home-btn">
+            <a href="home1.html" class="home-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                     <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -46,7 +46,7 @@
 
     <main>
         <h2 style="text-align: center; margin: 2rem 0; color: #6bb5e6;">My Bookmarked Anime</h2>
-        <div id="bookmarks-page-container" class="grid_container"></div>
+        <div id="bookmarks-page-container" class="gallery-container"></div>
     </main>
 
     <script type="module">
@@ -154,7 +154,7 @@
                 userEmailSpan.textContent = user.email;
                 loadBookmarks(user.uid);
             } else {
-                window.location.href = 'home_test.html';
+                window.location.href = 'home1.html';
             }
         });
 

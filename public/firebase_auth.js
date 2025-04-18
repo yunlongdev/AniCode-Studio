@@ -13,7 +13,7 @@ import {
     query,
     where,
     getDocs,
-  } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 // Your Firebase config
 const firebaseConfig = {
@@ -34,7 +34,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // DOM elements for auth
-const signInBtn = document.getElementById('sign_in');
+const signUpBtn = document.getElementById('sign_up');
 const loginBtn = document.getElementById('login');
 const authModal = document.getElementById('auth-modal');
 const closeModal = document.querySelector('.close-modal');
@@ -118,7 +118,7 @@ function showAuthModal(formType = 'login') {
     authModal.style.display = 'none';
   }
   
-  signInBtn.addEventListener('click', () => showAuthModal('signup'));
+  signUpBtn.addEventListener('click', () => showAuthModal('signup'));
   loginBtn.addEventListener('click', () => showAuthModal('login'));
   closeModal.addEventListener('click', closeAuthModal);
   switchToSignup.addEventListener('click', (e) => {
@@ -218,3 +218,5 @@ loginEmailForm.addEventListener('submit', async (e) => {
         });
     }
 });
+
+export { auth, db, addBookmark, getBookmarks, checkBookmark };
