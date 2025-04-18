@@ -84,32 +84,6 @@ window.addEventListener('click', (e) => {
   }
 });
 
-// Close auth modal
-function closeAuthModal() {
-  authModal.style.display = 'none';
-}
-
-// Event listeners for modal
-signInBtn.addEventListener('click', () => showAuthModal('signup'));
-loginBtn.addEventListener('click', () => showAuthModal('login'));
-closeModal.addEventListener('click', closeAuthModal);
-switchToSignup.addEventListener('click', (e) => {
-  e.preventDefault();
-  showAuthModal('signup');
-});
-
-switchToLogin.addEventListener('click', (e) => {
-  e.preventDefault();
-  showAuthModal('login');
-});
-
-// Close modal when clicking outside
-window.addEventListener('click', (e) => {
-  if (e.target === authModal) {
-    closeAuthModal();
-  }
-});
-
 // Username validation
 function isValidUsername(username) {
   const regex = /^[a-zA-Z0-9_]{3,20}$/;
@@ -299,16 +273,5 @@ async function checkBookmark(userId, animeId) {
     return false;
   }
 }
-
-exports.cleanupDeletedUser = functions.auth.user().onDelete((user) => {
-  const userId = user.uid;
-  return admin.firestore().collection("usernames").where("userId", "==", userId)
-    .get()
-    .then(snapshot => {
-      const batch = admin.firestore().batch();
-      snapshot.forEach(doc => batch.delete(doc.ref));
-      return batch.commit();
-    });
-});
 
 export { auth, db, addBookmark, getBookmarks, checkBookmark };
