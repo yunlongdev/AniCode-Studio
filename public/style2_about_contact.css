@@ -303,7 +303,7 @@ button {
     margin-bottom: 16px;
 }
 
-.contact_us input[type=text], #country {
+.contact_us input[type=text], .contact_us input[type=email], #country {
     height: 2em;
     width: 22em;
     padding: 4px;

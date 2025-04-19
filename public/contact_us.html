@@ -68,23 +68,23 @@
     
         <form id="contact_us_form" action="">
             <div>
-                <label for="username">Username:</label><br>
-                <input type="text" id="username" name="username" placeholder="Username">
+                <label for="email">Email:</label><br>
+                <input type="email" id="email" name="email" placeholder="Email" required>
             </div>
 
             <div>
                 <label for="fname">First name:</label><br>
-                <input type="text" id="fname" name="fname" placeholder="First Name">
+                <input type="text" id="fname" name="fname" placeholder="First Name" required>
             </div>
 
             <div>
                 <label for="lname">Last name:</label><br>
-                <input type="text" id="lname" name="lname" placeholder="Last Name">
+                <input type="text" id="lname" name="lname" placeholder="Last Name" required>
             </div>
 
             <div>
                 <label for="country">Choose your country:</label><br>
-                <select name="country" id="country">
+                <select name="country" id="country" required>
                     <option>Select a Country</option>
                     <option value="AF">Afghanistan</option>
                     <option value="AX">Åland Islands</option>
@@ -342,7 +342,7 @@
 
             <div>
               <label for="message">Message:</label><br>
-              <textarea type="text" id="message" name="message" placeholder="Message..."></textarea>
+              <textarea type="text" id="message" name="message" placeholder="Message..." required></textarea>
             </div>
 
             <div>
