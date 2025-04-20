@@ -492,6 +492,107 @@ button:active {
     color: #000;
 }
 
+/* CONTACT US */
+.contact_us {
+    background-color: rgba(40, 40, 40, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 900px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(107, 181, 230, 0.1);
+}
+
+.contact_us h2 {
+    text-align: center;
+    font-size: 2.2rem;
+    margin-bottom: 2rem;
+    color: #6bb5e6;
+    text-shadow: 0 0 8px rgba(107, 181, 230, 0.5);
+}
+
+#contact_us_form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+#contact_us_form > div {
+    display: flex;
+    flex-direction: column;
+}
+
+#contact_us_form label {
+    margin-bottom: 0.5rem;
+    color: #afd4f1;
+    font-size: 1rem;
+}
+
+#contact_us_form input,
+#contact_us_form select,
+#contact_us_form textarea {
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background-color: #282828;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+#contact_us_form input:focus,
+#contact_us_form select:focus,
+#contact_us_form textarea:focus {
+    outline: none;
+    border-color: #6bb5e6;
+    box-shadow: 0 0 0 2px rgba(107, 181, 230, 0.3);
+}
+
+#contact_us_form textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+#contact_us_form > div:last-child {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#submit_form {
+    padding: 0.8rem 2rem;
+    font-size: 1.1rem;
+    background: linear-gradient(to right, #6bb5e6, #4a90e2);
+    color: #0a0a0a;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+#submit_form:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(107, 181, 230, 0.3);
+}
+
+/* !ABOUT US */
+.about_us {
+    color: white;
+}
+
+.about_us div {
+    margin: 2em 2em;
+    font-size: 1.2rem;
+    min-height: 15em;
+}
+
+.about_us_title {
+    text-align: center;
+}
+
 /* Footer Styles */
 .footer {
     background-color: #1a1a1a;
