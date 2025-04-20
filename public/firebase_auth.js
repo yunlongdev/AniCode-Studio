@@ -7,12 +7,15 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 import { 
-    getFirestore,
-    collection,
-    addDoc,
-    query,
-    where,
-    getDocs,
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  deleteDoc,
+  doc,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -29,7 +32,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// DOM elements for auth
+// DOM elements
 const signUpBtn = document.getElementById('sign_up');
 const loginBtn = document.getElementById('login');
 const authModal = document.getElementById('auth-modal');
@@ -44,35 +47,48 @@ const userDropdown = document.getElementById('user-dropdown');
 const userEmailSpan = document.getElementById('user-email');
 const logoutBtn = document.getElementById('logout-btn');
 
-// Helper function to convert username to email
-function usernameToEmail(username) {
-  return `${username}@anicode.com`; // Using a fixed domain
-}
+// Modify forms to use username
+document.addEventListener('DOMContentLoaded', () => {
+  // Update login form labels
+  const loginEmailLabel = loginEmailForm.querySelector('label[for="login-email"]');
+  if (loginEmailLabel) loginEmailLabel.textContent = "Username";
+  const loginEmailInput = loginEmailForm.querySelector('#login-email');
+  if (loginEmailInput) loginEmailInput.placeholder = "Enter your username";
+  
+  // Update signup form labels
+  const signupEmailLabel = signupEmailForm.querySelector('label[for="signup-email"]');
+  if (signupEmailLabel) signupEmailLabel.textContent = "Username";
+  const signupEmailInput = signupEmailForm.querySelector('#signup-email');
+  if (signupEmailInput) signupEmailInput.placeholder = "Choose a username";
+});
 
 // Show auth modal
 function showAuthModal(formType = 'login') {
+  if (!authModal) return;
   authModal.style.display = 'block';
   if (formType === 'login') {
-    loginForm.style.display = 'block';
-    signupForm.style.display = 'none';
+    if (loginForm) loginForm.style.display = 'block';
+    if (signupForm) signupForm.style.display = 'none';
   } else {
-    loginForm.style.display = 'none';
-    signupForm.style.display = 'block';
+    if (loginForm) loginForm.style.display = 'none';
+    if (signupForm) signupForm.style.display = 'block';
   }
 }
+
 // Close auth modal
 function closeAuthModal() {
-  authModal.style.display = 'none';
+  if (authModal) authModal.style.display = 'none';
 }
 
-signUpBtn.addEventListener('click', () => showAuthModal('signup'));
-loginBtn.addEventListener('click', () => showAuthModal('login'));
-closeModal.addEventListener('click', closeAuthModal);
-switchToSignup.addEventListener('click', (e) => {
+// Event listeners
+if (signUpBtn) signUpBtn.addEventListener('click', () => showAuthModal('signup'));
+if (loginBtn) loginBtn.addEventListener('click', () => showAuthModal('login'));
+if (closeModal) closeModal.addEventListener('click', closeAuthModal);
+if (switchToSignup) switchToSignup.addEventListener('click', (e) => {
   e.preventDefault();
   showAuthModal('signup');
 });
-switchToLogin.addEventListener('click', (e) => {
+if (switchToLogin) switchToLogin.addEventListener('click', (e) => {
   e.preventDefault();
   showAuthModal('login');
 });
@@ -84,167 +100,215 @@ window.addEventListener('click', (e) => {
   }
 });
 
-// Username validation
-function isValidUsername(username) {
-  const regex = /^[a-zA-Z0-9_]{3,20}$/;
-  return regex.test(username);
+// Helper function to check if username exists
+async function usernameExists(username) {
+  const q = query(collection(db, "usernames"), where("username", "==", username));
+  const querySnapshot = await getDocs(q);
+  return !querySnapshot.empty;
 }
 
-// Signup function
-signupEmailForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const username = document.getElementById('signup-username').value.trim();
-  const password = document.getElementById('signup-password').value;
-  const confirmPassword = document.getElementById('signup-password-confirm').value;
+// Signup function with username
+if (signupEmailForm) {
+  signupEmailForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = signupEmailForm.querySelector('#signup-email').value;
+    const password = signupEmailForm.querySelector('#signup-password').value;
+    const confirmPassword = signupEmailForm.querySelector('#signup-password-confirm').value;
 
-  // Validate username
-  if (!isValidUsername(username)) {
-    alert("Username must be 3-20 characters long and can only contain letters, numbers, and underscores");
-    return;
-  }
+    if (!username || !password || !confirmPassword) {
+      alert("Please fill in all fields");
+      return;
+    }
 
-  // Check if username exists
-  const usernameQuery = query(collection(db, "usernames"), where("username", "==", username));
-  const usernameSnapshot = await getDocs(usernameQuery);
-  if (!usernameSnapshot.empty) {
-    alert("Username already exists");
-    return;
-  }
+    if (password !== confirmPassword) {
+      alert("Passwords don't match!");
+      return;
+    }
 
-  // Check password match
-  if (password !== confirmPassword) {
-    alert("Passwords don't match!");
-    return;
-  }
+    if (username.length < 3) {
+      alert("Username must be at least 3 characters");
+      return;
+    }
 
-  try {
-    // Create user with generated email
-    const email = usernameToEmail(username);
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    
-    // Store username in Firestore
-    await addDoc(collection(db, "usernames"), {
-      userId: userCredential.user.uid,
-      username: username,
-      createdAt: new Date()
-    });
-    
-    closeAuthModal();
-  } catch (error) {
-    console.error('Signup error:', error);
-    alert("Signup failed: " + error.message);
-  }
-});
+    if (await usernameExists(username)) {
+      alert("Username already taken");
+      return;
+    }
 
-// Login function
-loginEmailForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const username = document.getElementById('login-username').value.trim();
-  const password = document.getElementById('login-password').value;
-  
-  try {
-    // Convert username to email
-    const email = usernameToEmail(username);
-    await signInWithEmailAndPassword(auth, email, password);
-    closeAuthModal();
-  } catch (error) {
-    console.error('Login error:', error);
-    alert("Invalid username or password");
-  }
-});
+    try {
+      // Create auth with email (using username + @anicode.com as email)
+      const email = `${username}@anicode.com`;
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Store username in Firestore
+      await setDoc(doc(db, "usernames", userCredential.user.uid), {
+        username: username,
+        createdAt: new Date()
+      });
+
+      // Store user profile in Firestore
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        username: username,
+        createdAt: new Date()
+      });
+
+      closeAuthModal();
+      alert("Signup successful! You are now logged in.");
+    } catch (error) {
+      console.error('Signup error:', error);
+      let errorMessage = "Signup failed.";
+      if (error.code === 'auth/weak-password') {
+        errorMessage = "Password should be at least 6 characters.";
+      }
+      alert(errorMessage);
+    }
+  });
+}
+
+// Login function with username
+if (loginEmailForm) {
+  loginEmailForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = loginEmailForm.querySelector('#login-email').value;
+    const password = loginEmailForm.querySelector('#login-password').value;
+
+    if (!username || !password) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    try {
+      // Convert username to email (username@anicode.com)
+      const email = `${username}@anicode.com`;
+      await signInWithEmailAndPassword(auth, email, password);
+      closeAuthModal();
+    } catch (error) {
+      console.error('Login error:', error);
+      let errorMessage = "Login failed. Invalid username or password";
+      alert(errorMessage);
+    }
+  });
+}
 
 // Get username from Firestore
 async function getUsername(userId) {
   try {
-    const q = query(collection(db, "usernames"), where("userId", "==", userId));
-    const querySnapshot = await getDocs(q);
-    if (!querySnapshot.empty) {
-      return querySnapshot.docs[0].data().username;
-    }
-    return null;
+      const userDoc = await getDoc(doc(db, "usernames", userId));
+      if (userDoc.exists()) {
+          return userDoc.data().username;
+      }
+      return null;
   } catch (error) {
-    console.error("Error getting username:", error);
-    return null;
+      console.error("Error getting username:", error);
+      return null;
   }
 }
 
-// Auth state observer
+// Dropdown functionality
+function initDropdown() {
+  const profileBtn = document.getElementById('user-profile-btn');
+  const dropdownContent = document.querySelector('.dropdown-content');
+  
+  if (profileBtn && dropdownContent) {
+      // Remove any existing listeners to avoid duplicates
+      profileBtn.replaceWith(profileBtn.cloneNode(true));
+      const newProfileBtn = document.getElementById('user-profile-btn');
+      
+      newProfileBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          dropdownContent.classList.toggle('show');
+      });
+      
+      // Close when clicking outside
+      document.addEventListener('click', (e) => {
+          if (!e.target.closest('.dropdown')) {
+              dropdownContent.classList.remove('show');
+          }
+      });
+  }
+}
+
 onAuthStateChanged(auth, async (user) => {
   const signLogInDiv = document.querySelector('.sign_log_in');
+  const userDropdown = document.getElementById('user-dropdown');
   
   if (user) {
-    // User signed in
-    signLogInDiv.style.display = 'none';
-    userDropdown.style.display = 'block';
-    
-    // Get and display username
-    const username = await getUsername(user.uid);
-    if (username) {
-      userEmailSpan.textContent = username;
-    } else {
-      // Fallback to email prefix if username not found
-      userEmailSpan.textContent = user.email.split('@')[0];
-    }
+      if (signLogInDiv) signLogInDiv.style.display = 'none';
+      if (userDropdown) {
+          userDropdown.style.display = 'block';
+          const userUsernameSpan = document.getElementById('user-email');
+          if (userUsernameSpan) {
+              // Get just the username part (before @)
+              const username = user.email.split('@')[0];
+              userUsernameSpan.textContent = username;
+          }
+          initDropdown();
+      }
   } else {
-    // User signed out
-    signLogInDiv.style.display = 'flex';
-    userDropdown.style.display = 'none';
+      if (signLogInDiv) signLogInDiv.style.display = 'flex';
+      if (userDropdown) userDropdown.style.display = 'none';
   }
 });
 
 // Logout function
-logoutBtn.addEventListener('click', async () => {
-  try {
-    await signOut(auth);
-  } catch (error) {
-    console.error('Logout error:', error);
-  }
-});
-
-// Dropdown toggle
-document.addEventListener('DOMContentLoaded', () => {
-  const dropdown = document.querySelector('.dropdown');
-  const profileBtn = document.getElementById('user-profile-btn');
-  
-  if (dropdown && profileBtn) {
-    profileBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const dropdownContent = dropdown.querySelector('.dropdown-content');
-      dropdownContent.classList.toggle('show');
-    });
-    
-    // Close dropdown when clicking outside
-    window.addEventListener('click', (e) => {
-      if (!dropdown.contains(e.target)) {
-        const dropdownContent = dropdown.querySelector('.dropdown-content');
-        dropdownContent.classList.remove('show');
-      }
-    });
-  }
-});
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Logout error:', error);
+      alert("Logout failed. Please try again.");
+    }
+  });
+}
 
 // Bookmark functions
 async function addBookmark(userId, animeData) {
   try {
+    console.log("Attempting to bookmark:", animeData.id);
+    
+    // Initialize Firestore
+    const db = getFirestore();
+    if (!db) throw new Error("Firestore not initialized");
+    
+    // Create query
+    const bookmarksRef = collection(db, "bookmarks");
     const q = query(
-      collection(db, "bookmarks"),
+      bookmarksRef,
       where("userId", "==", userId),
       where("anime.id", "==", animeData.id)
     );
     
+    // Execute query
     const querySnapshot = await getDocs(q);
-    if (!querySnapshot.empty) {
-      throw new Error('This anime is already bookmarked');
-    }
     
-    await addDoc(collection(db, "bookmarks"), {
-      userId: userId,
-      anime: animeData,
-      createdAt: new Date()
-    });
+    if (!querySnapshot.empty) {
+      // Remove existing bookmarks
+      console.log("Removing existing bookmark");
+      const deletePromises = querySnapshot.docs.map(doc => 
+        deleteDoc(doc.ref)
+      );
+      await Promise.all(deletePromises);
+      return false;
+    } else {
+      // Add new bookmark
+      console.log("Adding new bookmark");
+      await addDoc(bookmarksRef, {
+        userId: userId,
+        anime: animeData,
+        createdAt: new Date()
+      });
+      return true;
+    }
   } catch (error) {
-    console.error("Error adding bookmark:", error);
-    throw error;
+    console.error("Bookmark error details:", {
+      error,
+      userId,
+      animeData,
+      stack: error.stack
+    });
+    throw new Error(`Failed to update bookmark: ${error.message}`);
   }
 }
 
@@ -274,4 +338,5 @@ async function checkBookmark(userId, animeId) {
   }
 }
 
-export { auth, db, addBookmark, getBookmarks, checkBookmark };
+document.addEventListener('DOMContentLoaded', initDropdown);
+export { auth, db, addBookmark, getBookmarks, checkBookmark, showAuthModal, getUsername };

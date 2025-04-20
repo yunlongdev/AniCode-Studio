@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>My Bookmarks - AniCode Studio</title>
-    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
@@ -14,11 +14,11 @@
     <!-- Header -->
     <header class="header">
         <h1 id="title">
-            <a href="./home1.html">AniCode Studio</a>
+            <a href="./home.html">AniCode Studio</a>
         </h1>
 
         <div class="nav-back">
-            <a href="home1.html" class="home-btn">
+            <a href="home.html" class="home-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                     <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -30,7 +30,7 @@
         <div class="dropdown-wrapper">
             <div id="user-dropdown" class="dropdown" style="display: none;">
                 <button id="user-profile-btn" class="profile-btn">
-                    <span id="user-username"></span>
+                    <span id="user-email"></span>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -46,7 +46,7 @@
 
     <main>
         <h2 style="text-align: center; margin: 2rem 0; color: #6bb5e6;">My Bookmarked Anime</h2>
-        <div id="bookmarks-page-container" class="gallery-container"></div>
+        <div id="bookmarks-page-container" class="grid_container"></div>
     </main>
 
     <script type="module">
@@ -83,24 +83,9 @@
         // DOM elements
         const userDropdown = document.getElementById('user-dropdown');
         const userProfileBtn = document.getElementById('user-profile-btn');
-        const userUsernameSpan = document.getElementById('user-username');
+        const userEmailSpan = document.getElementById('user-email');
         const logoutBtn = document.getElementById('logout-btn');
         const bookmarksContainer = document.getElementById('bookmarks-page-container');
-
-        // Get username from Firestore
-        async function getUsername(userId) {
-            try {
-                const q = query(collection(db, "usernames"), where("userId", "==", userId));
-                const querySnapshot = await getDocs(q);
-                if (!querySnapshot.empty) {
-                    return querySnapshot.docs[0].data().username;
-                }
-                return null;
-            } catch (error) {
-                console.error("Error getting username:", error);
-                return null;
-            }
-        }
 
         // Load bookmarks
         async function loadBookmarks(userId) {
@@ -111,7 +96,7 @@
                 bookmarksContainer.innerHTML = '';
 
                 if (querySnapshot.empty) {
-                    bookmarksContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: white; ">No bookmarks yet!</p>';
+                    bookmarksContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: white;">No bookmarks yet!</p>';
                     return;
                 }
 
@@ -122,34 +107,63 @@
                     card.innerHTML = `
                         <a href="${bookmark.url || '#'}" target="_blank" class="card-link">
                             <img class="title_card" src="${bookmark.image}" alt="${bookmark.title}" loading="lazy">
-                            <button class="remove-bookmark-btn" data-doc-id="${doc.id}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                            <div class="bookmark-btn bookmarked" data-doc-id="${doc.id}" data-anime-id="${bookmark.id}">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none">
+                                    <path class="bookmark-path" 
+                                        d="M6 4C6 3.44772 6.44772 3 7 3H17C17.5523 3 18 3.44772 18 4V21L12 17L6 21V4Z" 
+                                        stroke="white" 
+                                        stroke-width="2" 
+                                        stroke-linecap="round" 
+                                        stroke-linejoin="round"
+                                        fill="white"
+                                    />
                                 </svg>
-                            </button>
+                            </div>
+                            <div class="details-overlay">
+                                <div class="anime-details">
+                                    <div class="detail-row"><span class="detail-label">Score:</span><span class="detail-value">${bookmark.score ? `${bookmark.score.toFixed(1)} ★` : 'N/A'}</span></div>
+                                </div>
+                            </div>
                             <p class="anime_name">${bookmark.title}</p>
                         </a>
                     `;
                     bookmarksContainer.appendChild(card);
                 });
 
-                // Add event listeners to remove buttons
-                document.querySelectorAll('.remove-bookmark-btn').forEach(btn => {
+                // Add event listeners to bookmark buttons
+                document.querySelectorAll('.bookmark-btn').forEach(btn => {
                     btn.addEventListener('click', async (e) => {
                         e.preventDefault();
                         e.stopPropagation();
+                        
                         const docId = btn.getAttribute('data-doc-id');
-                        try {
-                            // Correct way to create a document reference
-                            const docRef = doc(db, "bookmarks", docId);
-                            await deleteDoc(docRef);
-                            btn.closest('.card').remove();
+                        const animeId = btn.getAttribute('data-anime-id');
+                        const user = auth.currentUser;
+                        
+                        if (!user) {
+                            return;
+                        }
 
-                            // Check if no bookmarks left
-                            if (bookmarksContainer.children.length === 0) {
-                                bookmarksContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: white;">No bookmarks yet!</p>';
-                            }
+                        try {
+                            // Remove the bookmark from Firestore
+                            await deleteDoc(doc(db, "bookmarks", docId));
+                            
+                            // Remove the bookmarked class and update the icon
+                            btn.classList.remove('bookmarked');
+                            const path = btn.querySelector('.bookmark-path');
+                            path.setAttribute('stroke', '#00BFFF');
+                            path.removeAttribute('fill');
+                            
+                            // Remove the card from the DOM after a short delay for visual feedback
+                            setTimeout(() => {
+                                btn.closest('.card').remove();
+                                
+                                // Check if no bookmarks left
+                                if (bookmarksContainer.children.length === 0) {
+                                    bookmarksContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: white;">No bookmarks yet!</p>';
+                                }
+                            }, 200);
+                            
                         } catch (error) {
                             console.error("Error removing bookmark:", error);
                             alert("Failed to remove bookmark. Please try again.");
@@ -163,14 +177,19 @@
         }
 
         // Auth state observer
-        onAuthStateChanged(auth, async (user) => {
+        onAuthStateChanged(auth, (user) => {
             if (user) {
                 userDropdown.style.display = 'block';
-                const username = await getUsername(user.uid);
-                userUsernameSpan.textContent = username || user.email.split('@')[0];
+                const userUsernameSpan = document.getElementById('user-email');
+                if (userUsernameSpan) {
+              // Get just the username part (before @)
+              const username = user.email.split('@')[0];
+              userEmailSpan.textContent = username;
+          }
+                
                 loadBookmarks(user.uid);
             } else {
-                window.location.href = 'home1.html';
+                window.location.href = 'home.html';
             }
         });
 
@@ -183,85 +202,76 @@
             }
         });
 
-        // Dropdown toggle on click (not hover)
-        document.addEventListener('DOMContentLoaded', () => {
-            const dropdown = document.querySelector('.dropdown');
-            const profileBtn = document.getElementById('user-profile-btn');
+        // Dropdown toggle
+        if (userProfileBtn) {
+            userProfileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const dropdownContent = userDropdown.querySelector('.dropdown-content');
+                dropdownContent.classList.toggle('show');
+            });
+        }
 
-            if (dropdown && profileBtn) {
-                profileBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const dropdownContent = dropdown.querySelector('.dropdown-content');
-                    dropdownContent.classList.toggle('show');
-                });
-
-                // Close dropdown when clicking outside
-                window.addEventListener('click', () => {
-                    const dropdownContent = dropdown.querySelector('.dropdown-content');
-                    dropdownContent.classList.remove('show');
-                });
+        // Close dropdown when clicking outside
+        window.addEventListener('click', () => {
+            const dropdownContent = document.querySelector('.dropdown-content');
+            if (dropdownContent) {
+                dropdownContent.classList.remove('show');
             }
         });
     </script>
 
     <style>
-        main {
-            background: rgba(26, 26, 26, 0.8);
-            border-radius: 16px;
-            margin: 2rem auto;
-            padding: 2rem;
-            max-width: 1400px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Home button container */
+        /* Back button styles */
         .nav-back {
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: flex-start;
-            background: transparent;
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            z-index: 10;
         }
 
-        /* home button styling */
         .home-btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
             background: rgba(107, 181, 230, 0.15);
-            backdrop-filter: blur(8px);
             color: #6bb5e6;
-            font-weight: 500;
-            font-size: 0.95rem;
             text-decoration: none;
-            padding: 0.6rem 1.2rem;
             border-radius: 9999px;
-            box-shadow: 0 4px 12px rgba(107, 181, 230, 0.25);
             border: 1px solid rgba(107, 181, 230, 0.25);
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
 
         .home-btn:hover {
             background: rgba(107, 181, 230, 0.3);
-            box-shadow: 0 6px 20px rgba(107, 181, 230, 0.35);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
-        /* Home icon inside the button */
         .home-btn svg {
-            width: 18px;
-            height: 18px;
-            stroke: #6bb5e6;
+            width: 16px;
+            height: 16px;
         }
 
+        /* Ensure grid container matches main page */
+        .grid_container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
 
-        /* Style for remove bookmark button */
-        .remove-bookmark-btn {
+        /* Bookmark button styles */
+        .bookmark-btn {
             position: absolute;
             top: 12px;
             right: 12px;
             width: 40px;
             height: 40px;
-            background: rgba(107, 181, 230, 0.8);
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(8px);
             border-radius: 50%;
             border: none;
@@ -273,18 +283,25 @@
             transition: all 0.3s ease;
         }
 
-        .remove-bookmark-btn:hover {
-            background: rgba(107, 181, 230, 1);
+        .bookmark-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
             transform: scale(1.05);
         }
 
-        .remove-bookmark-btn svg {
-            width: 20px;
-            height: 20px;
-            stroke: white;
+        .bookmark-btn.bookmarked {
+            background: rgba(107, 181, 230, 0.8);
         }
 
-        /* Dropdown position */
+        .bookmark-btn.bookmarked:hover {
+            background: rgba(107, 181, 230, 1);
+        }
+
+        .bookmark-btn .icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Dropdown styles */
         .dropdown-wrapper {
             position: absolute;
             top: 1rem;

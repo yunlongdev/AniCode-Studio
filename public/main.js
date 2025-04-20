@@ -1,14 +1,21 @@
-import { auth, db, addBookmark, getBookmarks, checkBookmark } from './firebase_auth.js';
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  addDoc,
-  deleteDoc,
-  doc
-} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { 
+    auth, 
+    db, 
+    addBookmark, 
+    getBookmarks, 
+    checkBookmark,
+    showAuthModal
+  } from './firebase_auth.js';
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+  import {
+    collection,
+    query,
+    where,
+    getDocs,
+    addDoc,
+    deleteDoc,
+    doc
+  } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("[Init] DOM loaded, starting app...");
@@ -159,9 +166,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                             <a href="${anime.url || '#'}" target="_blank" class="card-link">
                                 <img class="title_card" src="${imageUrl}" alt="${details.title}" loading="lazy">
                                 <div class="bookmark-btn">
-                                    <svg class="icon" viewBox="0 0 24 24" fill="none">
-                                        <path class="bookmark-path" d="M6 4C6 3.44772 6.44772 3 7 3H17C17.5523 3 18 3.44772 18 4V21L12 17L6 21V4Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none">
+                                        <path 
+                                            class="bookmark-path" 
+                                            d="M6 4C6 3.44772 6.44772 3 7 3H17C17.5523 3 18 3.44772 18 4V21L12 17L6 21V4Z" 
+                                            stroke="#00BFFF" 
+                                            stroke-width="2" 
+                                            stroke-linecap="round" 
+                                            stroke-linejoin="round"
+                                        />
+                                        </svg>
                                 </div>
                                 <div class="details-overlay">
                                     <div class="anime-details">
@@ -184,62 +198,88 @@ document.addEventListener("DOMContentLoaded", async () => {
                         onAuthStateChanged(auth, async (user) => {
                             if (user) {
                                 const isBookmarked = await checkBookmark(user.uid, anime.mal_id);
+                                const cacheKey = `${user.uid}_${anime.mal_id}`;
+                                
                                 if (isBookmarked) {
+                                    bookmarkCache.set(cacheKey, true);
                                     bookmarkBtn.classList.add('bookmarked');
+                                    const path = bookmarkBtn.querySelector('.bookmark-path');
+                                    if (path) {
+                                        path.setAttribute('stroke', 'white');
+                                        path.setAttribute('fill', 'white');
+                                    }
+                                } else {
+                                    bookmarkCache.delete(cacheKey);
+                                }
+                            } else {
+                                bookmarkBtn.classList.remove('bookmarked');
+                                const path = bookmarkBtn.querySelector('.bookmark-path');
+                                if (path) {
+                                    path.setAttribute('stroke', '#00BFFF');
+                                    path.removeAttribute('fill');
                                 }
                             }
                         });
+                        
+
+                        const bookmarkCache = new Map();
 
                         bookmarkBtn.addEventListener('click', async (e) => {
                             e.preventDefault();
                             e.stopPropagation();
-
+                          
                             const user = auth.currentUser;
                             if (!user) {
-                                console.log("User not logged in. Implement showAuthModal.");
+                                showAuthModal('login');
                                 return;
                             }
-
-                            const animeData = {
-                                id: anime.mal_id,
-                                title: details.title,
-                                image: imageUrl,
-                                url: anime.url,
-                                score: details.score
-                            };
-
+                        
+                            // Get current state from cache if available
+                            const cacheKey = `${user.uid}_${anime.mal_id}`;
+                            const wasBookmarked = bookmarkCache.get(cacheKey) || 
+                                                 bookmarkBtn.classList.contains('bookmarked');
+                        
+                            // Optimistic UI update
+                            bookmarkBtn.classList.toggle('bookmarked', !wasBookmarked);
+                            const path = bookmarkBtn.querySelector('.bookmark-path');
+                            if (path) {
+                                path.setAttribute('stroke', !wasBookmarked ? 'white' : '#00BFFF');
+                                path.setAttribute('fill', !wasBookmarked ? 'white' : 'none');
+                            }
+                        
                             try {
-                                // Check if already bookmarked
-                                const q = query(
-                                    collection(db, "bookmarks"),
-                                    where("userId", "==", user.uid),
-                                    where("anime.id", "==", anime.mal_id)
-                                );
-                                
-                                const querySnapshot = await getDocs(q);
-
-                                if (!querySnapshot.empty) {
-                                    // Remove bookmark
-                                    querySnapshot.forEach(async (doc) => {
-                                        await deleteDoc(doc.ref);
+                                if (wasBookmarked) {
+                                    // Remove bookmark using existing function
+                                    await addBookmark(user.uid, {
+                                        id: anime.mal_id,
+                                        title: anime.title,
+                                        image: imageUrl,
+                                        url: anime.url,
+                                        score: anime.score
                                     });
-                                    bookmarkBtn.classList.remove('bookmarked');
-                                    console.log('Bookmark removed successfully');
+                                    bookmarkCache.delete(cacheKey);
                                 } else {
-                                    // Add bookmark
-                                    await addDoc(collection(db, "bookmarks"), {
-                                        userId: user.uid,
-                                        anime: animeData,
-                                        createdAt: new Date()
+                                    // Add bookmark using existing function
+                                    await addBookmark(user.uid, {
+                                        id: anime.mal_id,
+                                        title: anime.title,
+                                        image: imageUrl,
+                                        url: anime.url,
+                                        score: anime.score
                                     });
-                                    bookmarkBtn.classList.add('bookmarked');
-                                    console.log('Bookmark added successfully');
+                                    bookmarkCache.set(cacheKey, true);
                                 }
                             } catch (error) {
-                                console.error('Error with bookmark:', error);
-                                alert('Bookmark operation failed: ' + error.message);
+                                // Revert UI on error
+                                bookmarkBtn.classList.toggle('bookmarked');
+                                if (path) {
+                                    path.setAttribute('stroke', wasBookmarked ? 'white' : '#00BFFF');
+                                    path.setAttribute('fill', wasBookmarked ? 'white' : 'none');
+                                }
+                                console.error('Bookmark error:', error);
                             }
                         });
+                          
 
                         galleryContainer.appendChild(card);
                     });
@@ -276,6 +316,145 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
     }
+
+    async function loadTrendingAnime() {
+        try {
+            const response = await fetch('https://api.jikan.moe/v4/top/anime?filter=airing&limit=10');
+            const data = await response.json();
+            displayTrendingAnime(data.data);
+        } catch (error) {
+            console.error('Error loading trending anime:', error);
+        }
+    }
+    
+      
+    async function loadTrendingAnime() {
+        try {
+            const response = await fetch('https://api.jikan.moe/v4/top/anime?filter=airing&limit=10');
+            const data = await response.json();
+            displayTrendingAnime(data.data || []);
+        } catch (error) {
+            console.error('Error loading trending anime:', error);
+            displayTrendingAnime([]); // Fallback to empty array
+        }
+    }
+    
+    function displayTrendingAnime(animeList) {
+        const carouselTrack = document.getElementById('carousel-track');
+        if (!carouselTrack) return;
+        
+        carouselTrack.innerHTML = '';
+        
+        if (animeList.length === 0) {
+            carouselTrack.innerHTML = '<p class="error-message">Failed to load trending anime. Try again later.</p>';
+            return;
+        }
+        
+        animeList.forEach(anime => {
+            const card = document.createElement('div');
+            card.className = 'trending-card';
+            
+            const imageUrl = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || 'https://via.placeholder.com/300x400';
+            
+            card.innerHTML = `
+                <img src="${imageUrl}" alt="${anime.title}" loading="lazy">
+                <div class="trending-title">${anime.title}</div>
+            `;
+            
+            card.addEventListener('click', () => {
+                window.open(anime.url, '_blank');
+            });
+            
+            carouselTrack.appendChild(card);
+        });
+    
+        // Initialize carousel controls
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+        const carousel = document.querySelector('.carousel');
+        
+        if (prevBtn && nextBtn && carousel) {
+            const scrollAmount = 220;
+            
+            prevBtn.addEventListener('click', () => {
+                carouselTrack.scrollBy({
+                    left: -scrollAmount,
+                    behavior: 'smooth'
+                });
+            });
+            
+            nextBtn.addEventListener('click', () => {
+                carouselTrack.scrollBy({
+                    left: scrollAmount,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Auto-scroll functionality
+            let scrollInterval;
+            let isHovering = false;
+            
+            function startAutoScroll() {
+                if (isHovering) return;
+                
+                scrollInterval = setInterval(() => {
+                    const maxScroll = carouselTrack.scrollWidth - carouselTrack.clientWidth;
+                    
+                    if (carouselTrack.scrollLeft >= maxScroll - 1) {
+                        carouselTrack.scrollTo({
+                            left: 0,
+                            behavior: 'smooth'
+                        });
+                    } else {
+                        carouselTrack.scrollBy({
+                            left: scrollAmount,
+                            behavior: 'smooth'
+                        });
+                    }
+                }, 3000);
+            }
+            
+            // Pause on hover
+            carousel.addEventListener('mouseenter', () => {
+                isHovering = true;
+                clearInterval(scrollInterval);
+            });
+            
+            carousel.addEventListener('mouseleave', () => {
+                isHovering = false;
+                startAutoScroll();
+            });
+            
+            startAutoScroll();
+        }
+    }
+
+    await loadTrendingAnime();
+
+    const mascot = document.getElementById('mascot');
+
+    // React to page events
+    mascot.addEventListener('click', function() {
+    this.classList.toggle('happy');
+    setTimeout(() => this.classList.remove('happy'), 2000);
+    });
+
+    // React to scroll
+    window.addEventListener('scroll', function() {
+    if (window.scrollY > 300) {
+        mascot.classList.add('excited');
+    } else {
+        mascot.classList.remove('excited');
+    }
+    });
+
+    // Random reactions
+    setInterval(() => {
+    const reactions = ['happy', 'spin', 'grow'];
+    const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
+    mascot.classList.add(randomReaction);
+    setTimeout(() => mascot.classList.remove(randomReaction), 1000);
+    }, 15000);
 
     async function fetchWithRetry(url, maxRetries = 3) {
         let retries = 0;
@@ -355,6 +534,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
         }
     }
+
+    loadTrendingAnime();
 
     function performSearch() {
         const query = searchInput.value.trim();
@@ -532,67 +713,48 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.querySelectorAll('.filter a').forEach(link => {
         link.addEventListener('click', async (event) => {
-            event.preventDefault();
             const linkText = link.textContent.trim();
+            
+            // Special handling for Bookmarks link
+            if (linkText === 'Bookmarks') {
+                const user = auth.currentUser;
+                if (!user) {
+                    event.preventDefault();
+                    alert('Please log in to access your bookmarks.');
+                    showAuthModal('login');
+                }
+                // If user is logged in, allow default navigation to proceed
+                return;
+            }
+    
+            // For all other links, prevent default and handle normally
+            event.preventDefault();
             currentPage = 1;
-            currentQuery = ''; //reset search on link click
-            currentMood = ''; //reset mood filter on link click
-            currentTagId = ''; //reset tag filter on link click
+            currentQuery = '';
+            currentMood = '';
+            currentTagId = '';
             searchInput.value = '';
-
+    
             document.querySelectorAll('.filter a').forEach(a => {
                 a.classList.remove('active');
             });
             link.classList.add('active');
-
+    
             if (linkText === 'Home') {
                 console.log("Navigating to Home.");
                 fetchAnime(currentPage);
                 if (prevBtn) prevBtn.style.display = 'block';
                 if (nextBtn) nextBtn.style.display = 'block';
                 if (randomBtn) randomBtn.style.display = 'block';
-
+    
             } else if (linkText === 'Genre') {
                 console.log("Navigating to Genre.");
                 displayGenres();
                 if (prevBtn) prevBtn.style.display = 'none';
                 if (nextBtn) nextBtn.style.display = 'none';
                 if (randomBtn) randomBtn.style.display = 'none';
-
-            } else if (linkText === 'Bookmarks') {
-                console.log("Navigating to Bookmarks.");
-                const user = auth.currentUser; 
-                if (prevBtn) prevBtn.style.display = 'none';
-                if (nextBtn) nextBtn.style.display = 'none';
-                if (randomBtn) randomBtn.style.display = 'none';
-
-
-                if (user) {
-                    console.log("User is logged in. Attempting to show bookmarks modal.");
-                    const bookmarksModal = document.getElementById('bookmarks-modal');
-                    if (bookmarksModal) {
-                        bookmarksModal.style.display = 'block';
-                        console.log("Bookmarks modal should be visible.");
-                    } else {
-                        console.error("Bookmarks modal element not found!");
-                    }
-
-                } else {
-                    console.log("User not logged in. Showing login prompt.");
-                    alert('Please log in to access your bookmarks.');
-                    const bookmarksModal = document.getElementById('bookmarks-modal');
-                    if (bookmarksModal) {
-                        bookmarksModal.style.display = 'none';
-                    }
-                }
-
-            } else {
-                console.log(`Applying mood filter: ${linkText}`);
-                fetchAnime(currentPage, '', linkText.toLowerCase());
-                if (prevBtn) prevBtn.style.display = 'block';
-                if (nextBtn) nextBtn.style.display = 'block';
-                if (randomBtn) randomBtn.style.display = 'block';
             }
         });
     });
+    
 });
