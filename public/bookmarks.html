@@ -100,35 +100,55 @@
                     return;
                 }
 
-                querySnapshot.forEach((doc) => {
-                    const bookmark = doc.data().anime;
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    card.innerHTML = `
-                        <a href="${bookmark.url || '#'}" target="_blank" class="card-link">
-                            <img class="title_card" src="${bookmark.image}" alt="${bookmark.title}" loading="lazy">
-                            <div class="bookmark-btn bookmarked" data-doc-id="${doc.id}" data-anime-id="${bookmark.id}">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none">
-                                    <path class="bookmark-path" 
-                                        d="M6 4C6 3.44772 6.44772 3 7 3H17C17.5523 3 18 3.44772 18 4V21L12 17L6 21V4Z" 
-                                        stroke="white" 
-                                        stroke-width="2" 
-                                        stroke-linecap="round" 
-                                        stroke-linejoin="round"
-                                        fill="white"
-                                    />
-                                </svg>
+                querySnapshot.forEach(async (doc) => {
+                    const animeId = doc.data().anime.id;
+
+                    try {
+                        const res = await fetch(`https://api.jikan.moe/v4/anime/${animeId}`);
+                        const json = await res.json();
+                        const anime = json.data;
+
+                        const genres = anime.genres.map(g => g.name).join(", ");
+                        const aired = anime.aired.string || "N/A";
+
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        card.innerHTML = `
+                        <a href="${anime.url}" target="_blank" class="card-link">
+                            <img class="title_card" src="${anime.images.jpg.image_url}" alt="${anime.title}" loading="lazy">
+                            <div class="bookmark-btn bookmarked" data-doc-id="${doc.id}" data-anime-id="${anime.mal_id}">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none">
+                                <path class="bookmark-path" 
+                                d="M6 4C6 3.44772 6.44772 3 7 3H17C17.5523 3 18 3.44772 18 4V21L12 17L6 21V4Z" 
+                                stroke="white" 
+                                stroke-width="2" 
+                                stroke-linecap="round" 
+                                stroke-linejoin="round"
+                                fill="white"
+                                />
+                            </svg>
                             </div>
                             <div class="details-overlay">
-                                <div class="anime-details">
-                                    <div class="detail-row"><span class="detail-label">Score:</span><span class="detail-value">${bookmark.score ? `${bookmark.score.toFixed(1)} ★` : 'N/A'}</span></div>
-                                </div>
+                            <div class="anime-details">
+                                <div class="detail-row"><span class="detail-label">Type:</span><span class="detail-value">${anime.type}</span></div>
+                                <div class="detail-row"><span class="detail-label">Episodes:</span><span class="detail-value">${anime.episodes}</span></div>
+                                <div class="detail-row"><span class="detail-label">Score:</span><span class="detail-value">${anime.score}</span></div>
+                                <div class="detail-row"><span class="detail-label">Rating:</span><span class="detail-value">${anime.rating || 'N/A'}</span></div>
+                                <div class="detail-row"><span class="detail-label">Status:</span><span class="detail-value">${anime.status}</span></div>
+                                <div class="detail-row"><span class="detail-label">Aired:</span><span class="detail-value">${aired}</span></div>
+                                <div class="detail-row genres"><span class="detail-label">Genres:</span><span class="detail-value">${genres}</span></div>
                             </div>
-                            <p class="anime_name">${bookmark.title}</p>
+                            </div>
+                            <p class="anime_name">${anime.title}</p>
                         </a>
-                    `;
-                    bookmarksContainer.appendChild(card);
-                });
+                        `;
+
+                        bookmarksContainer.appendChild(card);
+                    } catch (err) {
+                        console.error("Failed to fetch anime details from Jikan:", err);
+                    }
+                    });
+
 
                 // Add event listeners to bookmark buttons
                 document.querySelectorAll('.bookmark-btn').forEach(btn => {

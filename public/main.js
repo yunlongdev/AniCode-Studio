@@ -316,145 +316,143 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
     }
-
-    async function loadTrendingAnime() {
-        try {
-            const response = await fetch('https://api.jikan.moe/v4/top/anime?filter=airing&limit=10');
-            const data = await response.json();
-            displayTrendingAnime(data.data);
-        } catch (error) {
-            console.error('Error loading trending anime:', error);
-        }
-    }
     
-      
-    async function loadTrendingAnime() {
-        try {
-            const response = await fetch('https://api.jikan.moe/v4/top/anime?filter=airing&limit=10');
-            const data = await response.json();
-            displayTrendingAnime(data.data || []);
-        } catch (error) {
-            console.error('Error loading trending anime:', error);
-            displayTrendingAnime([]); // Fallback to empty array
-        }
-    }
+    // async function loadTrendingAnime() {
+    //     try {
+    //         const response = await fetch('https://api.jikan.moe/v4/top/anime?filter=airing&limit=10');
+    //         const data = await response.json();
+    //         displayTrendingAnime(data.data || []);
+    //     } catch (error) {
+    //         console.error('Error loading trending anime:', error);
+    //         displayTrendingAnime([]); // Fallback to empty array
+    //     }
+    // }
     
-    function displayTrendingAnime(animeList) {
-        const carouselTrack = document.getElementById('carousel-track');
-        if (!carouselTrack) return;
+    // function displayTrendingAnime(animeList) {
+    //     const carouselTrack = document.getElementById('carousel-track');
+    //     if (!carouselTrack) return;
         
-        carouselTrack.innerHTML = '';
+    //     carouselTrack.innerHTML = '';
         
-        if (animeList.length === 0) {
-            carouselTrack.innerHTML = '<p class="error-message">Failed to load trending anime. Try again later.</p>';
-            return;
-        }
+    //     if (animeList.length === 0) {
+    //         carouselTrack.innerHTML = '<p class="error-message">Failed to load trending anime. Try again later.</p>';
+    //         return;
+    //     }
         
-        animeList.forEach(anime => {
-            const card = document.createElement('div');
-            card.className = 'trending-card';
+    //     animeList.forEach(anime => {
+    //         const card = document.createElement('div');
+    //         card.className = 'trending-card';
             
-            const imageUrl = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || 'https://via.placeholder.com/300x400';
+    //         const imageUrl = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || 'https://via.placeholder.com/300x400';
             
-            card.innerHTML = `
-                <img src="${imageUrl}" alt="${anime.title}" loading="lazy">
-                <div class="trending-title">${anime.title}</div>
-            `;
+    //         card.innerHTML = `
+    //             <img src="${imageUrl}" alt="${anime.title}" loading="lazy">
+    //             <div class="trending-title">${anime.title}</div>
+    //         `;
             
-            card.addEventListener('click', () => {
-                window.open(anime.url, '_blank');
-            });
+    //         card.addEventListener('click', () => {
+    //             window.open(anime.url, '_blank');
+    //         });
             
-            carouselTrack.appendChild(card);
-        });
+    //         carouselTrack.appendChild(card);
+    //     });
     
-        // Initialize carousel controls
-        const prevBtn = document.querySelector('.prev-btn');
-        const nextBtn = document.querySelector('.next-btn');
-        const carousel = document.querySelector('.carousel');
+    //     // Initialize carousel controls
+    //     const prevBtn = document.querySelector('.prev-btn');
+    //     const nextBtn = document.querySelector('.next-btn');
+    //     const carousel = document.querySelector('.carousel');
         
-        if (prevBtn && nextBtn && carousel) {
-            const scrollAmount = 220;
+    //     if (prevBtn && nextBtn && carousel) {
+    //         const scrollAmount = 220;
             
-            prevBtn.addEventListener('click', () => {
-                carouselTrack.scrollBy({
-                    left: -scrollAmount,
-                    behavior: 'smooth'
-                });
-            });
+    //         prevBtn.addEventListener('click', () => {
+    //             carouselTrack.scrollBy({
+    //                 left: -scrollAmount,
+    //                 behavior: 'smooth'
+    //             });
+    //         });
             
-            nextBtn.addEventListener('click', () => {
-                carouselTrack.scrollBy({
-                    left: scrollAmount,
-                    behavior: 'smooth'
-                });
-            });
+    //         nextBtn.addEventListener('click', () => {
+    //             carouselTrack.scrollBy({
+    //                 left: scrollAmount,
+    //                 behavior: 'smooth'
+    //             });
+    //         });
             
-            // Auto-scroll functionality
-            let scrollInterval;
-            let isHovering = false;
+    //         // Auto-scroll functionality
+    //         let scrollInterval;
+    //         let isHovering = false;
             
-            function startAutoScroll() {
-                if (isHovering) return;
+    //         function startAutoScroll() {
+    //             if (isHovering) return;
                 
-                scrollInterval = setInterval(() => {
-                    const maxScroll = carouselTrack.scrollWidth - carouselTrack.clientWidth;
+    //             scrollInterval = setInterval(() => {
+    //                 const maxScroll = carouselTrack.scrollWidth - carouselTrack.clientWidth;
                     
-                    if (carouselTrack.scrollLeft >= maxScroll - 1) {
-                        carouselTrack.scrollTo({
-                            left: 0,
-                            behavior: 'smooth'
-                        });
-                    } else {
-                        carouselTrack.scrollBy({
-                            left: scrollAmount,
-                            behavior: 'smooth'
-                        });
-                    }
-                }, 3000);
-            }
+    //                 if (carouselTrack.scrollLeft >= maxScroll - 1) {
+    //                     carouselTrack.scrollTo({
+    //                         left: 0,
+    //                         behavior: 'smooth'
+    //                     });
+    //                 } else {
+    //                     carouselTrack.scrollBy({
+    //                         left: scrollAmount,
+    //                         behavior: 'smooth'
+    //                     });
+    //                 }
+    //             }, 3000);
+    //         }
             
-            // Pause on hover
-            carousel.addEventListener('mouseenter', () => {
-                isHovering = true;
-                clearInterval(scrollInterval);
-            });
+    //         // Pause on hover
+    //         carousel.addEventListener('mouseenter', () => {
+    //             isHovering = true;
+    //             clearInterval(scrollInterval);
+    //         });
             
-            carousel.addEventListener('mouseleave', () => {
-                isHovering = false;
-                startAutoScroll();
-            });
+    //         carousel.addEventListener('mouseleave', () => {
+    //             isHovering = false;
+    //             startAutoScroll();
+    //         });
             
-            startAutoScroll();
-        }
-    }
+    //         startAutoScroll();
+    //     }
+    // }
 
-    await loadTrendingAnime();
+    // await loadTrendingAnime();
 
     const mascot = document.getElementById('mascot');
 
-    // React to page events
-    mascot.addEventListener('click', function() {
-    this.classList.toggle('happy');
-    setTimeout(() => this.classList.remove('happy'), 2000);
-    });
-
-    // React to scroll
-    window.addEventListener('scroll', function() {
-    if (window.scrollY > 300) {
-        mascot.classList.add('excited');
-    } else {
-        mascot.classList.remove('excited');
+    if (mascot) {
+      // On click: mascot becomes happy briefly
+      mascot.addEventListener('click', () => {
+        if (!mascot.classList.contains('happy')) {
+          mascot.classList.add('happy');
+          setTimeout(() => mascot.classList.remove('happy'), 2000);
+        }
+      });
+    
+      // On scroll: mascot gets excited
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+          mascot.classList.add('excited');
+        } else {
+          mascot.classList.remove('excited');
+        }
+      });
+    
+      // Random animations: every 15 seconds
+      const reactions = ['happy', 'spin', 'grow'];
+      setInterval(() => {
+        const random = reactions[Math.floor(Math.random() * reactions.length)];
+    
+        if (!mascot.classList.contains(random)) {
+          mascot.classList.add(random);
+          setTimeout(() => mascot.classList.remove(random), 1000);
+        }
+      }, 15000);
     }
-    });
-
-    // Random reactions
-    setInterval(() => {
-    const reactions = ['happy', 'spin', 'grow'];
-    const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
-    mascot.classList.add(randomReaction);
-    setTimeout(() => mascot.classList.remove(randomReaction), 1000);
-    }, 15000);
+    
+    
 
     async function fetchWithRetry(url, maxRetries = 3) {
         let retries = 0;
@@ -534,8 +532,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
         }
     }
-
-    loadTrendingAnime();
 
     function performSearch() {
         const query = searchInput.value.trim();
