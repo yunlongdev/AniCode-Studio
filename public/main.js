@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     suggestionsContainer.className = 'search-suggestions';
     suggestionsContainer.style.display = 'none';
     searchInput.parentNode.appendChild(suggestionsContainer);
+    const trailerCache = new Map();
 
     const moodMappings = {
         sad: ["Drama", "Psychological"],
@@ -159,38 +160,113 @@ document.addEventListener("DOMContentLoaded", async () => {
                             rating: anime.rating?.split(' - ')[0] || 'Unknown',
                             status: anime.status || 'Unknown',
                             aired: anime.aired?.string || 'Unknown date',
-                            genres: anime.genres?.map(g => g.name).join(', ') || 'Unknown genre'
+                            genres: anime.genres?.map(g => g.name).join(', ') || 'Unknown genre',
+                            trailer: anime.trailer // Add trailer data
                         };
 
+                        // In the card template
                         card.innerHTML = `
-                            <a href="${anime.url || '#'}" target="_blank" class="card-link">
-                                <img class="title_card" src="${imageUrl}" alt="${details.title}" loading="lazy">
-                                <div class="bookmark-btn">
-                                        <svg class="icon" viewBox="0 0 24 24" fill="none">
-                                        <path 
-                                            class="bookmark-path" 
-                                            d="M6 4C6 3.44772 6.44772 3 7 3H17C17.5523 3 18 3.44772 18 4V21L12 17L6 21V4Z" 
-                                            stroke="#00BFFF" 
-                                            stroke-width="2" 
-                                            stroke-linecap="round" 
-                                            stroke-linejoin="round"
-                                        />
-                                        </svg>
+                        <a href="#" class="card-link" data-anime-id="${anime.mal_id}">
+                          <img class="title_card" src="${imageUrl}" alt="${details.title}" loading="lazy">
+                          <div class="bookmark-btn">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none">
+                              <path class="bookmark-path" d="M6 4C6 3.44772 6.44772 3 7 3H17C17.5523 3 18 3.44772 18 4V21L12 17L6 21V4Z" stroke="#00BFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                          </div>
+                          <div class="details-overlay">
+                            <div class="anime-details">
+                              <div class="detail-row"><span class="detail-label">Type:</span><span class="detail-value">${details.type}</span></div>
+                              <div class="detail-row"><span class="detail-label">Episodes:</span><span class="detail-value">${details.episodes}</span></div>
+                              <div class="detail-row"><span class="detail-label">Score:</span><span class="detail-value">${details.score}</span></div>
+                              <div class="detail-row"><span class="detail-label">Rating:</span><span class="detail-value">${details.rating}</span></div>
+                              <div class="detail-row"><span class="detail-label">Status:</span><span class="detail-value">${details.status}</span></div>
+                              <div class="detail-row"><span class="detail-label">Aired:</span><span class="detail-value">${details.aired}</span></div>
+                              <div class="detail-row genres"><span class="detail-label">Genres:</span><span class="detail-value">${details.genres}</span></div>
+                            </div>
+                          </div>
+                          <p class="anime_name">${details.title}</p>
+                        </a>
+                      `;
+                      
+                      // Add click handler for the card to open details page
+                      card.querySelector('.card-link').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const animeId = e.currentTarget.getAttribute('data-anime-id');
+                        window.location.href = `anime-details.html?id=${animeId}`;
+                      });
+
+                        if (anime.trailer?.embed_url) {
+                            const trailerPreview = card.querySelector('.trailer-preview');
+                            if (trailerPreview) {
+                              trailerPreview.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                showTrailerModal(anime);
+                              });
+                            }
+                          }
+                        
+                        function showTrailerModal(anime) {
+                            const modal = document.createElement('div');
+                            modal.className = 'trailer-modal';
+                            
+                            // Create a unique ID for this trailer
+                            const trailerId = `trailer-${anime.mal_id}`;
+                            
+                            modal.innerHTML = `
+                              <div class="trailer-modal-content">
+                                <span class="close-trailer-modal">&times;</span>
+                                <h3>${anime.title} Trailer</h3>
+                                <div class="trailer-container">
+                                  <iframe id="${trailerId}" class="trailer-iframe" 
+                                    src="${anime.trailer.embed_url}?autoplay=1&mute=0&enablejsapi=1" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen></iframe>
                                 </div>
-                                <div class="details-overlay">
-                                    <div class="anime-details">
-                                        <div class="detail-row"><span class="detail-label">Type:</span><span class="detail-value">${details.type}</span></div>
-                                        <div class="detail-row"><span class="detail-label">Episodes:</span><span class="detail-value">${details.episodes}</span></div>
-                                        <div class="detail-row"><span class="detail-label">Score:</span><span class="detail-value">${details.score}</span></div>
-                                        <div class="detail-row"><span class="detail-label">Rating:</span><span class="detail-value">${details.rating}</span></div>
-                                        <div class="detail-row"><span class="detail-label">Status:</span><span class="detail-value">${details.status}</span></div>
-                                        <div class="detail-row"><span class="detail-label">Aired:</span><span class="detail-value">${details.aired}</span></div>
-                                        <div class="detail-row genres"><span class="detail-label">Genre:</span><span class="detail-value">${details.genres}</span></div>
-                                    </div>
-                                </div>
-                                <p class="anime_name">${details.title}</p>
-                            </a>
-                        `;
+                              </div>
+                            `;
+                            document.body.appendChild(modal);
+
+                            
+                            
+                        // Cache the iframe
+                        const iframe = document.getElementById(trailerId);
+                        trailerCache.set(trailerId, iframe);
+                        
+                        const closeBtn = modal.querySelector('.close-trailer-modal');
+                        closeBtn.addEventListener('click', () => {
+                            // Pause the video before closing
+                            if (iframe) {
+                            iframe.src = '';
+                            }
+                            document.body.removeChild(modal);
+                            trailerCache.delete(trailerId);
+                        });
+                        
+                        modal.addEventListener('click', (e) => {
+                            if (e.target === modal) {
+                            // Pause the video before closing
+                            if (iframe) {
+                                iframe.src = '';
+                            }
+                            document.body.removeChild(modal);
+                            trailerCache.delete(trailerId);
+                            }
+                        });
+                        
+                        // Close modal with Escape key
+                        document.addEventListener('keydown', function handleKeyDown(e) {
+                            if (e.key === 'Escape') {
+                            if (iframe) {
+                                iframe.src = '';
+                            }
+                            document.body.removeChild(modal);
+                            trailerCache.delete(trailerId);
+                            document.removeEventListener('keydown', handleKeyDown);
+                            }
+                        });
+                        }
 
                         const bookmarkBtn = card.querySelector('.bookmark-btn');
 

@@ -2,368 +2,225 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>My Bookmarks - AniCode</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
+  <meta charset="UTF-8">
+  <title>My Bookmarks - AniCode</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+    crossorigin="anonymous"
+  />
+  <link rel="icon" href="./AniCode_Logo.webp" type="image/x-icon">
+  <link rel="stylesheet" href="./bookmarks.css" />
+
 </head>
 
 <body>
-    <!-- Header -->
-    <header class="header">
-        <h1 id="title">
-            <a href="./home.html">AniCode</a>
-        </h1>
+  <!-- Header -->
+  <header class="header">
+    <h1 id="title">
+      <a href="./home.html">AniCode</a>
+    </h1>
 
-        <div class="nav-back">
-            <a href="home.html" class="home-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                Back to Home
-            </a>
+    <div class="nav-back">
+      <a href="home.html" class="home-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        Back to Home
+      </a>
+    </div>
+
+    <div class="dropdown-wrapper">
+      <div id="user-dropdown" class="dropdown" style="display: none;">
+        <button id="user-profile-btn" class="profile-btn">
+          <span id="user-email"></span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="dropdown-content">
+          <a href="bookmarks.html">My Bookmarks</a>
+          <a href="#" id="logout-btn">Logout</a>
         </div>
+      </div>
+    </div>
+  </header>
 
-        <div class="dropdown-wrapper">
-            <div id="user-dropdown" class="dropdown" style="display: none;">
-                <button id="user-profile-btn" class="profile-btn">
-                    <span id="user-email"></span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                </button>
-                <div class="dropdown-content">
-                    <a href="bookmarks.html">My Bookmarks</a>
-                    <a href="#" id="logout-btn">Logout</a>
+  <main>
+    <h2 style="text-align: center; margin: 2rem 0; color: #6bb5e6;">
+      My Bookmarked Anime
+    </h2>
+    <div id="bookmarks-page-container" class="grid_container"></div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import {
+      getAuth,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      where,
+      getDocs,
+      deleteDoc,
+      doc
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB2_6cfrGeg210I-D80l9snYQ7JV_2bgEk",
+      authDomain: "anicode-studio.firebaseapp.com",
+      projectId: "anicode-studio",
+      storageBucket: "anicode-studio.appspot.com",
+      messagingSenderId: "268024222588",
+      appId: "1:268024222588:web:8b68c1394d750e7f1a4af9",
+      measurementId: "G-XHGKSBKDZ8"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const userDropdown = document.getElementById('user-dropdown');
+    const userProfileBtn = document.getElementById('user-profile-btn');
+    const userEmailSpan = document.getElementById('user-email');
+    const logoutBtn = document.getElementById('logout-btn');
+    const bookmarksContainer = document.getElementById('bookmarks-page-container');
+
+    function handleBookmarkRemove(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const btn = e.currentTarget;
+      const docId = btn.getAttribute('data-doc-id');
+      const card = btn.closest('.card');
+
+      if (card) {
+        card.remove();
+        if (bookmarksContainer.children.length === 0) {
+          bookmarksContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: white;">No bookmarks yet!</p>';
+        }
+      }
+
+      deleteDoc(doc(db, "bookmarks", docId)).catch((error) => {
+        console.error("Error removing bookmark:", error);
+        alert("Failed to remove bookmark from database.");
+      });
+    }
+
+    async function loadBookmarks(userId) {
+      try {
+        const q = query(collection(db, "bookmarks"), where("userId", "==", userId));
+        const querySnapshot = await getDocs(q);
+
+        bookmarksContainer.innerHTML = '';
+
+        if (querySnapshot.empty) {
+          bookmarksContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: white;">No bookmarks yet!</p>';
+          return;
+        }
+
+        querySnapshot.forEach(async (docSnap) => {
+          const animeId = docSnap.data().anime.id;
+
+          try {
+            const res = await fetch(`https://api.jikan.moe/v4/anime/${animeId}`);
+            const json = await res.json();
+            const anime = json.data;
+
+            const genres = anime.genres.map(g => g.name).join(", ");
+            const aired = anime.aired.string || "N/A";
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+              <a href="anime-details.html?id=${anime.mal_id}" class="card-link">
+                <img class="title_card" src="${anime.images.jpg.image_url}" alt="${anime.title}" loading="lazy">
+                <div class="bookmark-btn bookmarked" data-doc-id="${docSnap.id}" data-anime-id="${anime.mal_id}">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none">
+                    <path class="bookmark-path"
+                      d="M6 4C6 3.44772 6.44772 3 7 3H17C17.5523 3 18 3.44772 18 4V21L12 17L6 21V4Z"
+                      stroke="white"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      fill="white"
+                    />
+                  </svg>
                 </div>
-            </div>
-        </div>
-    </header>
+                <div class="details-overlay">
+                  <div class="anime-details">
+                    <div class="detail-row"><span class="detail-label">Type:</span> ${anime.type}</div>
+                    <div class="detail-row"><span class="detail-label">Episodes:</span> ${anime.episodes}</div>
+                    <div class="detail-row"><span class="detail-label">Score:</span> ${anime.score}</div>
+                    <div class="detail-row"><span class="detail-label">Rating:</span> ${anime.rating || 'N/A'}</div>
+                    <div class="detail-row"><span class="detail-label">Status:</span> ${anime.status}</div>
+                    <div class="detail-row"><span class="detail-label">Aired:</span> ${aired}</div>
+                    <div class="detail-row genres"><span class="detail-label">Genres:</span> ${genres}</div>
+                  </div>
+                </div>
+                <p class="anime_name">${anime.title}</p>
+              </a>
+            `;
 
-    <main>
-        <h2 style="text-align: center; margin: 2rem 0; color: #6bb5e6;">My Bookmarked Anime</h2>
-        <div id="bookmarks-page-container" class="grid_container"></div>
-    </main>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import {
-            getAuth,
-            signOut,
-            onAuthStateChanged
-        } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import {
-            getFirestore,
-            collection,
-            query,
-            where,
-            getDocs,
-            deleteDoc,
-            doc
-        } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyB2_6cfrGeg210I-D80l9snYQ7JV_2bgEk",
-            authDomain: "anicode-studio.firebaseapp.com",
-            projectId: "anicode-studio",
-            storageBucket: "anicode-studio.appspot.com",
-            messagingSenderId: "268024222588",
-            appId: "1:268024222588:web:8b68c1394d750e7f1a4af9",
-            measurementId: "G-XHGKSBKDZ8"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // DOM elements
-        const userDropdown = document.getElementById('user-dropdown');
-        const userProfileBtn = document.getElementById('user-profile-btn');
-        const userEmailSpan = document.getElementById('user-email');
-        const logoutBtn = document.getElementById('logout-btn');
-        const bookmarksContainer = document.getElementById('bookmarks-page-container');
-
-        // Function to handle bookmark removal
-        async function handleBookmarkRemove(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const btn = e.currentTarget;
-            const docId = btn.getAttribute('data-doc-id');
-            const user = auth.currentUser;
-            
-            if (!user) {
-                return;
-            }
-
-            try {
-                // Remove the bookmark from Firestore
-                await deleteDoc(doc(db, "bookmarks", docId));
-                
-                // Visual feedback
-                btn.classList.add('removing');
-                
-                // Remove the card from the DOM after a short delay for visual feedback
-                setTimeout(() => {
-                    const card = btn.closest('.card');
-                    if (card) {
-                        card.style.transform = 'scale(0.9)';
-                        card.style.opacity = '0';
-                        
-                        setTimeout(() => {
-                            card.remove();
-                            
-                            // Check if no bookmarks left
-                            if (bookmarksContainer.children.length === 0) {
-                                bookmarksContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: white;">No bookmarks yet!</p>';
-                            }
-                        }, 300);
-                    }
-                }, 200);
-                
-            } catch (error) {
-                console.error("Error removing bookmark:", error);
-                btn.classList.remove('removing');
-                alert("Failed to remove bookmark. Please try again.");
-            }
-        }
-
-        // Load bookmarks
-        async function loadBookmarks(userId) {
-            try {
-                const q = query(collection(db, "bookmarks"), where("userId", "==", userId));
-                const querySnapshot = await getDocs(q);
-
-                bookmarksContainer.innerHTML = '';
-
-                if (querySnapshot.empty) {
-                    bookmarksContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: white;">No bookmarks yet!</p>';
-                    return;
-                }
-
-                querySnapshot.forEach(async (doc) => {
-                    const animeId = doc.data().anime.id;
-
-                    try {
-                        const res = await fetch(`https://api.jikan.moe/v4/anime/${animeId}`);
-                        const json = await res.json();
-                        const anime = json.data;
-
-                        const genres = anime.genres.map(g => g.name).join(", ");
-                        const aired = anime.aired.string || "N/A";
-
-                        const card = document.createElement('div');
-                        card.className = 'card';
-                        card.innerHTML = `
-                            <a href="${anime.url}" target="_blank" class="card-link">
-                                <img class="title_card" src="${anime.images.jpg.image_url}" alt="${anime.title}" loading="lazy">
-                                <div class="bookmark-btn bookmarked" data-doc-id="${doc.id}" data-anime-id="${anime.mal_id}">
-                                    <svg class="icon" viewBox="0 0 24 24" fill="none">
-                                        <path class="bookmark-path" 
-                                        d="M6 4C6 3.44772 6.44772 3 7 3H17C17.5523 3 18 3.44772 18 4V21L12 17L6 21V4Z" 
-                                        stroke="white" 
-                                        stroke-width="2" 
-                                        stroke-linecap="round" 
-                                        stroke-linejoin="round"
-                                        fill="white"
-                                        />
-                                    </svg>
-                                </div>
-                                <div class="details-overlay">
-                                    <div class="anime-details">
-                                        <div class="detail-row"><span class="detail-label">Type:</span><span class="detail-value">${anime.type}</span></div>
-                                        <div class="detail-row"><span class="detail-label">Episodes:</span><span class="detail-value">${anime.episodes}</span></div>
-                                        <div class="detail-row"><span class="detail-label">Score:</span><span class="detail-value">${anime.score}</span></div>
-                                        <div class="detail-row"><span class="detail-label">Rating:</span><span class="detail-value">${anime.rating || 'N/A'}</span></div>
-                                        <div class="detail-row"><span class="detail-label">Status:</span><span class="detail-value">${anime.status}</span></div>
-                                        <div class="detail-row"><span class="detail-label">Aired:</span><span class="detail-value">${aired}</span></div>
-                                        <div class="detail-row genres"><span class="detail-label">Genres:</span><span class="detail-value">${genres}</span></div>
-                                    </div>
-                                </div>
-                                <p class="anime_name">${anime.title}</p>
-                            </a>
-                        `;
-
-                        // Add event listener after the card is appended to the DOM
-                        bookmarksContainer.appendChild(card);
-                        const bookmarkBtn = card.querySelector('.bookmark-btn');
-                        bookmarkBtn.addEventListener('click', handleBookmarkRemove);
-                    } catch (err) {
-                        console.error("Failed to fetch anime details from Jikan:", err);
-                    }
-                });
-            } catch (error) {
-                console.error("Error loading bookmarks:", error);
-                bookmarksContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Error loading bookmarks. Please try again.</p>';
-            }
-        }
-
-        // Auth state observer
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                userDropdown.style.display = 'block';
-                const userUsernameSpan = document.getElementById('user-email');
-                if (userUsernameSpan) {
-                    // Get just the username part (before @)
-                    const username = user.email.split('@')[0];
-                    userEmailSpan.textContent = username;
-                }
-                
-                loadBookmarks(user.uid);
-            } else {
-                window.location.href = 'home.html';
-            }
+            bookmarksContainer.appendChild(card);
+            const bookmarkBtn = card.querySelector('.bookmark-btn');
+            bookmarkBtn.addEventListener('click', handleBookmarkRemove);
+          } catch (err) {
+            console.error("Failed to fetch anime details from Jikan:", err);
+          }
         });
+      } catch (error) {
+        console.error("Error loading bookmarks:", error);
+        bookmarksContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Error loading bookmarks. Please try again.</p>';
+      }
+    }
 
-        // Logout
-        logoutBtn.addEventListener('click', async () => {
-            try {
-                await signOut(auth);
-            } catch (error) {
-                console.error('Logout error:', error);
-            }
-        });
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userDropdown.style.display = 'block';
+        const username = user.email.split('@')[0];
+        userEmailSpan.textContent = username;
+        loadBookmarks(user.uid);
+      } else {
+        window.location.href = 'home.html';
+      }
+    });
 
-        // Dropdown toggle
-        if (userProfileBtn) {
-            userProfileBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const dropdownContent = userDropdown.querySelector('.dropdown-content');
-                dropdownContent.classList.toggle('show');
-            });
-        }
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    });
 
-        // Close dropdown when clicking outside
-        window.addEventListener('click', () => {
-            const dropdownContent = document.querySelector('.dropdown-content');
-            if (dropdownContent) {
-                dropdownContent.classList.remove('show');
-            }
-        });
-    </script>
+    if (userProfileBtn) {
+      userProfileBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const dropdownContent = userDropdown.querySelector('.dropdown-content');
+        dropdownContent.classList.toggle('show');
+      });
+    }
 
-    <style>
-        /* Back button styles */
-        .nav-back {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            z-index: 10;
-        }
-
-        .home-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: rgba(107, 181, 230, 0.15);
-            color: #6bb5e6;
-            text-decoration: none;
-            border-radius: 9999px;
-            border: 1px solid rgba(107, 181, 230, 0.25);
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .home-btn:hover {
-            background: rgba(107, 181, 230, 0.3);
-            transform: translateY(-1px);
-        }
-
-        .home-btn svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        /* Ensure grid container matches main page */
-        .grid_container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 1.5rem;
-            padding: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        /* Bookmark button styles */
-        .bookmark-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            width: 40px;
-            height: 40px;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(8px);
-            border-radius: 50%;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 3;
-            transition: all 0.3s ease;
-        }
-
-        .card {
-            transition: all 0.3s ease;
-        }
-
-        .bookmark-btn.removing {
-            background: rgba(255, 0, 0, 0.8) !important;
-            transform: scale(1.1);
-        }
-
-        .bookmark-btn.removing .bookmark-path {
-            stroke: white !important;
-            fill: white !important;
-            animation: pulse 0.5s ease;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
-        .bookmark-btn:hover {
-            background: rgba(0, 0, 0, 0.7);
-            transform: scale(1.05);
-        }
-
-        .bookmark-btn.bookmarked {
-            background: rgba(107, 181, 230, 0.8);
-        }
-
-        .bookmark-btn.bookmarked:hover {
-            background: rgba(107, 181, 230, 1);
-        }
-
-        .bookmark-btn .icon {
-            width: 24px;
-            height: 24px;
-        }
-
-        /* Dropdown styles */
-        .dropdown-wrapper {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            z-index: 1000;
-        }
-
-        .dropdown-content {
-            display: none;
-        }
-
-        .dropdown-content.show {
-            display: block;
-        }
-    </style>
+    window.addEventListener('click', () => {
+      const dropdownContent = document.querySelector('.dropdown-content');
+      if (dropdownContent) {
+        dropdownContent.classList.remove('show');
+      }
+    });
+  </script>
 </body>
 
 </html>

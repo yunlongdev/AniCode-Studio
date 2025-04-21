@@ -1,0 +1,222 @@
+body {
+    background-color: #0e0e0e;
+    color: #f1f1f1;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .anime-info,
+  .anime-synopsis,
+  .detail-card,
+  .meta-item,
+  .section-title,
+  .anime-title {
+    color: #ffffff;
+  }
+  
+  .anime-info,
+  .anime-synopsis {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+.anime-details-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(40, 40, 40, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(107, 181, 230, 0.1);
+  }
+
+  .anime-header {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .anime-header {
+      flex-direction: row;
+    }
+  }
+
+  .anime-poster {
+    flex: 0 0 300px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  .anime-poster img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .anime-info {
+    flex: 1;
+    color: white;
+  }
+
+  .anime-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #6bb5e6;
+    text-shadow: 0 0 8px rgba(107, 181, 230, 0.5);
+  }
+
+  .anime-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .meta-item {
+    background: rgba(107, 181, 230, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.9rem;
+  }
+
+  .anime-synopsis {
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .detail-section {
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #6bb5e6;
+    border-bottom: 1px solid rgba(107, 181, 230, 0.3);
+    padding-bottom: 0.5rem;
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .detail-card {
+    background: rgba(30, 30, 30, 0.6);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(107, 181, 230, 0.1);
+  }
+
+  .detail-card h3 {
+    color: #6bb5e6;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  .trailer-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    margin-top: 2rem;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .trailer-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(107, 181, 230, 0.15);
+    color: #6bb5e6;
+    text-decoration: none;
+    border-radius: 9999px;
+    border: 1px solid rgba(107, 181, 230, 0.25);
+    transition: all 0.3s ease;
+    margin-bottom: 2rem;
+  }
+
+  .back-btn:hover {
+    background: rgba(107, 181, 230, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(107, 181, 230, 0.3);
+    border-radius: 50%;
+    border-top-color: #6bb5e6;
+    animation: spin 1s ease-in-out infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (max-width: 768px) {
+    .anime-details-container {
+      padding: 1rem;
+      margin: 1rem auto;
+    }
+    
+    .anime-title {
+      font-size: 1.8rem;
+    }
+    
+    .anime-poster {
+      flex: 0 0 100%;
+      margin-bottom: 1rem;
+    }
+    
+    .meta-item {
+      font-size: 0.8rem;
+      padding: 0.3rem 0.8rem;
+    }
+    
+    .detail-card {
+      padding: 1rem;
+    }
+    
+    .section-title {
+      font-size: 1.3rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .anime-title {
+      font-size: 1.5rem;
+    }
+    
+    .anime-meta {
+      gap: 0.5rem;
+    }
+    
+    .detail-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .trailer-container {
+      margin-top: 1rem;
+    }
+  }
+  

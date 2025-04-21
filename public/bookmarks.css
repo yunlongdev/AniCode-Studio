@@ -1,0 +1,192 @@
+    /* Back button styles */
+    .nav-back {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        z-index: 10;
+    }
+
+    .home-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: rgba(107, 181, 230, 0.15);
+        color: #6bb5e6;
+        text-decoration: none;
+        border-radius: 9999px;
+        border: 1px solid rgba(107, 181, 230, 0.25);
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+    .home-btn:hover {
+        background: rgba(107, 181, 230, 0.3);
+        transform: translateY(-1px);
+    }
+
+    .home-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Ensure grid container matches main page */
+    .grid_container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1.5rem;
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    /* Bookmark button styles */
+    .bookmark-btn {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 40px;
+        height: 40px;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(8px);
+        border-radius: 50%;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 3;
+        transition: all 0.3s ease;
+    }
+
+    .card {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .bookmark-btn.removing {
+        background: rgba(255, 0, 0, 0.8) !important;
+        transform: scale(1.1);
+    }
+
+    .bookmark-btn.removing .bookmark-path {
+        stroke: white !important;
+        fill: white !important;
+        animation: pulse 0.5s ease;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+
+    .bookmark-btn:hover {
+        background: rgba(0, 0, 0, 0.7);
+        transform: scale(1.05);
+    }
+
+    .bookmark-btn.bookmarked {
+        background: rgba(107, 181, 230, 0.8);
+    }
+
+    .bookmark-btn.bookmarked:hover {
+        background: rgba(107, 181, 230, 1);
+    }
+
+    .bookmark-btn .icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Dropdown styles */
+    .dropdown-wrapper {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        z-index: 1000;
+    }
+
+    .dropdown-content {
+        display: none;
+    }
+
+    .dropdown-content.show {
+        display: block;
+    }
+
+    /* Card overlay */
+    .details-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        visibility: hidden;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .card:hover .details-overlay {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .anime-details {
+        position: absolute;
+        bottom: 1rem;
+        left: 1rem;
+        right: 1rem;
+        color: white;
+        font-size: 1rem;
+    }
+
+    .detail-row {
+        margin: 0.5rem 0;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .detail-label {
+        font-weight: 600;
+    }
+
+    .card-link {
+        color: white;
+        text-decoration: none;
+    }
+
+    /* Anime name and image styling */
+    .title_card {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+    }
+
+    .title_card:hover {
+        transform: scale(1.05);
+    }
+
+    .anime_name {
+        text-align: center;
+        font-weight: bold;
+        color: white;
+        padding-top: 0.5rem;
+    }
+
+    /* Centered header */
+    h2 {
+        text-align: center;
+        margin: 2rem 0;
+        color: #6bb5e6;
+    }
+
+    /* Empty message */
+    .grid_container p {
+        grid-column: 1 / -1;
+        text-align: center;
+        color: white;
+    }
