@@ -39,7 +39,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     suggestionsContainer.className = 'search-suggestions';
     suggestionsContainer.style.display = 'none';
     searchInput.parentNode.appendChild(suggestionsContainer);
-    const trailerCache = new Map();
 
     const moodMappings = {
         sad: ["Drama", "Psychological"],
@@ -122,7 +121,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             } else if (!query && !mood && !tagId) {
                 apiUrl = `https://api.jikan.moe/v4/top/anime?page=${page}&limit=${ITEMS_PER_PAGE}`;
             } else if (mood && !moodMappings[mood]) {
-                apiUrl = `https://api.jikan.moe/v4/top/anime?page=${page}&limit=${ITEMS_PER_PAGE}`; // Fallback if mood is invalid
+                apiUrl = `https://api.jikan.moe/v4/top/anime?page=${page}&limit=${ITEMS_PER_PAGE}`;
             }
 
             console.log("[API URL]", apiUrl);
@@ -161,7 +160,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                             status: anime.status || 'Unknown',
                             aired: anime.aired?.string || 'Unknown date',
                             genres: anime.genres?.map(g => g.name).join(', ') || 'Unknown genre',
-                            trailer: anime.trailer // Add trailer data
                         };
 
                         // In the card template
@@ -194,79 +192,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                         const animeId = e.currentTarget.getAttribute('data-anime-id');
                         window.location.href = `anime-details.html?id=${animeId}`;
                       });
-
-                        if (anime.trailer?.embed_url) {
-                            const trailerPreview = card.querySelector('.trailer-preview');
-                            if (trailerPreview) {
-                              trailerPreview.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                showTrailerModal(anime);
-                              });
-                            }
-                          }
-                        
-                        function showTrailerModal(anime) {
-                            const modal = document.createElement('div');
-                            modal.className = 'trailer-modal';
-                            
-                            // Create a unique ID for this trailer
-                            const trailerId = `trailer-${anime.mal_id}`;
-                            
-                            modal.innerHTML = `
-                              <div class="trailer-modal-content">
-                                <span class="close-trailer-modal">&times;</span>
-                                <h3>${anime.title} Trailer</h3>
-                                <div class="trailer-container">
-                                  <iframe id="${trailerId}" class="trailer-iframe" 
-                                    src="${anime.trailer.embed_url}?autoplay=1&mute=0&enablejsapi=1" 
-                                    frameborder="0" 
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                    allowfullscreen></iframe>
-                                </div>
-                              </div>
-                            `;
-                            document.body.appendChild(modal);
-
-                            
-                            
-                        // Cache the iframe
-                        const iframe = document.getElementById(trailerId);
-                        trailerCache.set(trailerId, iframe);
-                        
-                        const closeBtn = modal.querySelector('.close-trailer-modal');
-                        closeBtn.addEventListener('click', () => {
-                            // Pause the video before closing
-                            if (iframe) {
-                            iframe.src = '';
-                            }
-                            document.body.removeChild(modal);
-                            trailerCache.delete(trailerId);
-                        });
-                        
-                        modal.addEventListener('click', (e) => {
-                            if (e.target === modal) {
-                            // Pause the video before closing
-                            if (iframe) {
-                                iframe.src = '';
-                            }
-                            document.body.removeChild(modal);
-                            trailerCache.delete(trailerId);
-                            }
-                        });
-                        
-                        // Close modal with Escape key
-                        document.addEventListener('keydown', function handleKeyDown(e) {
-                            if (e.key === 'Escape') {
-                            if (iframe) {
-                                iframe.src = '';
-                            }
-                            document.body.removeChild(modal);
-                            trailerCache.delete(trailerId);
-                            document.removeEventListener('keydown', handleKeyDown);
-                            }
-                        });
-                        }
 
                         const bookmarkBtn = card.querySelector('.bookmark-btn');
 
@@ -310,7 +235,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 return;
                             }
                         
-                            // Get current state from cache if available
+                            // Get current state from cache
                             const cacheKey = `${user.uid}_${anime.mal_id}`;
                             const wasBookmarked = bookmarkCache.get(cacheKey) || 
                                                  bookmarkBtn.classList.contains('bookmarked');
@@ -396,7 +321,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const mascot = document.getElementById('mascot');
 
     if (mascot) {
-      // On click: mascot becomes happy briefly
+      // On click: mascot becomes happy
       mascot.addEventListener('click', () => {
         if (!mascot.classList.contains('happy')) {
           mascot.classList.add('happy');

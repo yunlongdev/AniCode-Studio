@@ -30,7 +30,6 @@
         height: 16px;
     }
 
-    /* Ensure grid container matches main page */
     .grid_container {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -134,21 +133,39 @@
         opacity: 1;
     }
 
+    .card:hover .anime-details {
+        transform: translateY(0);
+        opacity: 1;
+        transition-delay: 0.1s;
+    }
+
     .anime-details {
-        position: absolute;
-        bottom: 1rem;
-        left: 1rem;
-        right: 1rem;
         color: white;
-        font-size: 1rem;
+        transform: translateY(20px);
+        transition: transform 0.4s ease;
+        opacity: 0;
+        padding-bottom: 10px;
     }
 
     .detail-row {
-        margin: 0.5rem 0;
+        margin-bottom: 8px;
         display: flex;
-        justify-content: space-between;
+        align-items: center;
     }
-
+    
+    .detail-label {
+        font-weight: 600;
+        color: #6bb5e6;
+        min-width: 80px;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .detail-value {
+        flex: 1;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
     .detail-label {
         font-weight: 600;
     }

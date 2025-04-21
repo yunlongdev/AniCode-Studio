@@ -1,4 +1,4 @@
-/* Reset and General Styles */
+/* General Styles */
 * {
     margin: 0;
     padding: 0;
@@ -55,7 +55,7 @@ a, button, .card, .filter a {
   }
 
 button {
-    transition: all 0.3s ease; /* Using new css transition */
+    transition: all 0.3s ease;
 }
 
 button:active {
@@ -366,7 +366,7 @@ button:active {
     opacity: 0;
     transition: opacity 0.3s ease-out;
     backdrop-filter: blur(3px);
-    pointer-events: none; /* Allow clicks to pass through to the card link */
+    pointer-events: none;
 }
 
 .card:hover .details-overlay {
@@ -431,13 +431,15 @@ button:active {
 .genres .detail-value {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 0.85rem;
     color: #e0e0e0;
 }
-/* Favorite button hover refinement */
+
+/* Favorite button */
 .favourite {
     transform: scale(0.9);
     transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
@@ -1303,7 +1305,7 @@ button:active {
   .trailer-container {
     position: relative;
     width: 100%;
-    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    padding-bottom: 56.25%;
     margin-bottom: 1rem;
     border-radius: 8px;
     overflow: hidden;

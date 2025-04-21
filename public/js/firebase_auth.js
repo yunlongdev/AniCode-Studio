@@ -100,7 +100,7 @@ window.addEventListener('click', (e) => {
   }
 });
 
-// Helper function to check if username exists
+// Function to check if username exists
 async function usernameExists(username) {
   const q = query(collection(db, "usernames"), where("username", "==", username));
   const querySnapshot = await getDocs(q);
@@ -136,7 +136,7 @@ if (signupEmailForm) {
     }
 
     try {
-      // Create auth with email (using username + @anicode.com as email)
+      // Create auth with email (using username and @anicode.com as email)
       const email = `${username}@anicode.com`;
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
@@ -178,7 +178,7 @@ if (loginEmailForm) {
     }
 
     try {
-      // Convert username to email (username@anicode.com)
+      // Convert username to email
       const email = `${username}@anicode.com`;
       await signInWithEmailAndPassword(auth, email, password);
       closeAuthModal();

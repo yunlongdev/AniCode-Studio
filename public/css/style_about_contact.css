@@ -1,4 +1,4 @@
-/* Reset and General Styles */
+/* General Styles */
 * {
     margin: 0;
     padding: 0;
@@ -680,11 +680,18 @@ button {
     text-decoration: underline;
 }
 
+/* Wrapper for positioning */
+.dropdown-wrapper {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+}
+
 /* Dropdown container */
 .dropdown {
-    position: absolute;
-    top: 2.5rem; /* Adjust according to your design */
-    right: 0;
+    position: relative;
+    display: inline-block;
 }
 
 /* Profile button styles */
@@ -722,45 +729,6 @@ button {
 }
 
 /* Dropdown links */
-.dropdown-wrapper {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    z-index: 1000;
-}
-
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.profile-btn {
-    background-color: #3f3f3f;
-    color: #afd4f1;
-    border: 1px solid #4b4b4b;
-    border-radius: 1rem;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.3s;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    right: 0;
-    background-color: #282828;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-top: 0.5rem;
-}
-
 .dropdown-content a {
     color: #afd4f1;
     padding: 12px 16px;
@@ -773,6 +741,7 @@ button {
     background-color: #3f3f3f;
     color: #6bb5e6;
 }
+
 
 .bookmark-btn {
     position: absolute;

@@ -3,17 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <title>AniCode</title>
-    <link rel="stylesheet" href="style.css"/>
+    <link rel="stylesheet" href="./css/style.css"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Sawarabi+Mincho&display=swap" rel="stylesheet">
-    <link rel="icon" href="./AniCode_Logo.webp" type="image/x-icon">
+    <link rel="icon" href="./images/AniCode_Logo.webp" type="image/x-icon">
 
     <!-- !JS moved to body -->
-    <script type="module" src="./firebase_auth.js"></script>
-    <script type="module" src="./main.js"></script>
+    <script type="module" src="./js/firebase_auth.js"></script>
+    <script type="module" src="./js/main.js"></script>
 
   </head>
 
@@ -33,9 +33,24 @@
 
       <!-- todo Add logo here -->
       <div id="logo">
-        <img src="./AniCode_Logo.webp" alt="AniCode_Logo" />
+        <img src="./images/AniCode_Logo.webp" alt="AniCode_Logo" />
       </div>
     </header>
+
+    <div class="dropdown-wrapper">
+      <div id="user-dropdown" class="dropdown" style="display: none;">
+          <button id="user-profile-btn" class="profile-btn">
+              <span id="user-email"></span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+          </button>
+          <div class="dropdown-content">
+              <a href="bookmarks.html">My Bookmarks</a>
+              <a href="#" id="logout-btn">Logout</a>
+          </div>
+      </div>
+  </div>
 
     <nav id="nav">
       <div class="filter">
@@ -334,7 +349,7 @@
 
     <footer class="footer">
         <div id="footer_logo">
-            <img src="./AniCode_Logo.webp" alt="AniCode_logo" />
+            <img src="./images/AniCode_Logo.webp" alt="AniCode_logo" />
         </div>
 
         <div class="social_media">
@@ -382,76 +397,48 @@
             </a>
         </div>
 
-        <!-- Login/Signup Modals -->
-        <!-- <div id="auth-modal" class="modal">
-            <div class="modal-content">
-                <span class="close-modal">&times;</span>
-                <div id="auth-container"> -->
-                    <!-- Login Form -->
-                    <!-- <div id="login-form" class="auth-form">
-                        <h2>Login</h2>
-                        <form id="login-email-form">
-                            <div class="form-group">
-                                <label for="login-email">Email</label>
-                                <input type="email" id="login-email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="login-password">Password</label>
-                                <input type="password" id="login-password" required>
-                            </div>
-                            <button type="submit" class="auth-btn">Login</button>
-                        </form>
-                        <p class="auth-switch">Don't have an account? <a href="#" id="switch-to-signup">Sign up</a></p>
-                    </div> -->
+    <!-- Login/Signup Modals -->
+    <div id="auth-modal" class="modal">
+      <div class="modal-content">
+          <span class="close-modal">&times;</span>
+          <div id="auth-container">
+              <!-- Login Form -->
+  <div id="login-form" class="auth-form">
+    <h2>Login</h2>
+    <form id="login-email-form">
+        <div class="form-group">
+            <label for="login-email">Username</label>
+            <input type="text" id="login-email" required placeholder="Enter your username">
+        </div>
+        <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" required>
+        </div>
+        <button type="submit" class="auth-btn">Login</button>
+    </form>
+    <p class="auth-switch">Don't have an account? <a href="#" id="switch-to-signup">Sign up</a></p>
+  </div>
 
-                    <!-- Signup Form -->
-                    <!-- <div id="signup-form" class="auth-form" style="display: none;">
-                        <h2>Sign Up</h2>
-                        <form id="signup-email-form">
-                            <div class="form-group">
-                                <label for="signup-email">Email</label>
-                                <input type="email" id="signup-email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="signup-password">Password</label>
-                                <input type="password" id="signup-password" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="signup-password-confirm">Confirm Password</label>
-                                <input type="password" id="signup-password-confirm" required>
-                            </div>
-                            <button type="submit" class="auth-btn">Sign Up</button>
-                        </form>
-                        <p class="auth-switch">Already have an account? <a href="#" id="switch-to-login">Login</a></p>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-
-        <!-- User Profile Dropdown -->
-        <!-- <div class="dropdown-wrapper">
-            <div id="user-dropdown" class="dropdown" style="display: none;">
-                <button id="user-profile-btn" class="profile-btn">
-                    <span id="user-email"></span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                </button>
-                <div class="dropdown-content">
-                    <a href="bookmarks.html">My Bookmarks</a>
-                    <a href="#" id="logout-btn">Logout</a>
-                </div>
-            </div>
-        </div> -->
-
-        <!-- Bookmarks Modal -->
-        <!-- <div id="bookmarks-modal" class="modal">
-            <div class="modal-content">
-                <span class="close-bookmarks-modal">&times;</span>
-                <h2>My Bookmarks</h2>
-                <div id="bookmarks-container" class="gallery-container"></div>
-            </div>
-        </div> -->
+  <!-- Update the signup form labels -->
+  <div id="signup-form" class="auth-form" style="display: none;">
+    <h2>Sign Up</h2>
+    <form id="signup-email-form">
+        <div class="form-group">
+            <label for="signup-email">Username</label>
+            <input type="text" id="signup-email" required placeholder="Choose a username">
+        </div>
+        <div class="form-group">
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" required>
+        </div>
+        <div class="form-group">
+            <label for="signup-password-confirm">Confirm Password</label>
+            <input type="password" id="signup-password-confirm" required>
+        </div>
+        <button type="submit" class="auth-btn">Sign Up</button>
+    </form>
+    <p class="auth-switch">Already have an account? <a href="#" id="switch-to-login">Login</a></p>
+  </div>
     </footer>
   </body>
 </html>
